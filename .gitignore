@@ -1,0 +1,41 @@
+# ===== Java / Gradle =====
+BE/**/build/
+BE/**/bin/
+BE/.gradle/
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+*.class
+*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# ===== Node / Vue =====
+FE/**/node_modules/
+FE/**/dist/
+FE/**/.vite/
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ===== Env / secrets =====
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ===== Local dev database (H2 files) =====
+data/
+BE/**/data/
+*.mv.db
+*.trace.db
+
+# ===== IDE / OS =====
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ===== Logs =====
+logs/
+*.log

@@ -1,0 +1,46 @@
+# ===========================================================================
+# AI 커뮤니티 — 개발용 인프라 (설계서 3_architecture.md 기준)
+#   - 주 데이터베이스     : PostgreSQL (DB-01)
+#   - 캐시/세션 저장소    : Redis      (DB-02)
+#
+# 사용법:
+#   docker compose -f docker-compose.dev.yml up -d
+#   그런 다음 백엔드 서비스를 SPRING_PROFILES_ACTIVE=docker 로 실행하세요.
+#
+# ※ Docker 가 설치돼 있지 않은 환경에서는 이 파일 없이도 동작합니다.
+#    (기본 profile=local: H2 파일 DB + 인메모리 캐시)
+# ===========================================================================
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aicommunity-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-aicommunity}
+      POSTGRES_USER: ${POSTGRES_USER:-aicommunity}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aicommunity_dev_pw}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aicommunity}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: aicommunity-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+  redisdata:

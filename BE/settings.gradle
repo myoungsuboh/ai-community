@@ -1,0 +1,11 @@
+rootProject.name = 'ai-community-be'
+
+include 'common'
+include 'auth-service'
+include 'content-service'
+include 'curation-service'
+include 'user-activity-service'
+include 'qna-service'
+include 'project-service'
+include 'ranking-api-service'
+include 'ranking-batch-worker'

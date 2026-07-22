@@ -1,0 +1,14 @@
+package com.aicommunity.auth;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * auth-service — 진입점. base package "com.aicommunity" 를 스캔해 공용(common) 설정을 함께 로드한다.
+ */
+@SpringBootApplication(scanBasePackages = "com.aicommunity")
+public class AuthServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AuthServiceApplication.class, args);
+    }
+}

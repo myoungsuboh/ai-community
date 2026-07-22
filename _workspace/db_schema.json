@@ -1,0 +1,187 @@
+{
+  "$comment": "Task 1.2 산출물 — DDD(2_ddd.md) 애그리거트/엔티티 + 불변식 + API 응답 스키마 + IMPLEMENTATION-CHECKLIST 속성 개수를 근거로 도출한 초기 DB 스키마. 규칙: skills/db/er-er-modeling.md (snake_case 복수형, UUID PK, 감사컬럼). 단일 주 데이터베이스(DB-01)를 모든 서비스가 공유(설계서 Connection Map 기준). Redis(DB-02)는 세션/레이트리밋/카운터 용도로 테이블 없음.",
+  "database": "aicommunity",
+  "engine_target": "PostgreSQL 16 (docker) / H2 PostgreSQL-mode (local)",
+  "tables": {
+    "users": {
+      "owner_service": "auth-service",
+      "aggregate": "User",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "email", "type": "varchar(255)", "nullable": false, "unique": true},
+        {"name": "password_hash", "type": "varchar(255)", "nullable": false},
+        {"name": "nickname", "type": "varchar(50)", "nullable": false, "note": "회원가입 필수 (invariant)"},
+        {"name": "role", "type": "varchar(20)", "nullable": false, "default": "MEMBER", "note": "MEMBER | CURATOR | ADMIN"},
+        {"name": "failed_login_count", "type": "int", "nullable": false, "default": "0"},
+        {"name": "locked_until", "type": "timestamptz", "nullable": true, "note": "5회 실패 시 10분 잠금"},
+        {"name": "session_expires_at", "type": "timestamptz", "nullable": true, "note": "세션 7일 유지"},
+        {"name": "created_at", "type": "timestamptz", "nullable": false},
+        {"name": "updated_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "posts": {
+      "owner_service": "content-service",
+      "aggregate": "Post",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "title", "type": "varchar(200)", "nullable": false, "note": "len>=5 (invariant)"},
+        {"name": "content", "type": "text", "nullable": false, "note": "len>=10 (invariant), HTML sanitize"},
+        {"name": "author_id", "type": "uuid", "nullable": false, "note": "users.id (서비스 간 ID 참조)"},
+        {"name": "tags", "type": "text", "nullable": true, "note": "JSON 배열 문자열"},
+        {"name": "created_at", "type": "timestamptz", "nullable": false},
+        {"name": "updated_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "cards": {
+      "owner_service": "curation-service (write) / content-service (read: 상세·목록)",
+      "aggregate": "Card",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "slug", "type": "varchar(160)", "nullable": false, "unique": true},
+        {"name": "title", "type": "varchar(200)", "nullable": false},
+        {"name": "category", "type": "varchar(50)", "nullable": false},
+        {"name": "repo_url", "type": "varchar(500)", "nullable": false},
+        {"name": "summary_line1", "type": "varchar(60)", "nullable": true, "note": "3줄 요약 각 줄 최대 60자"},
+        {"name": "summary_line2", "type": "varchar(60)", "nullable": true},
+        {"name": "summary_line3", "type": "varchar(60)", "nullable": true},
+        {"name": "score_total", "type": "int", "nullable": false, "default": "0", "note": "실전점수 총점 = 4축 합"},
+        {"name": "score_axis_docs", "type": "int", "nullable": false, "default": "0", "note": "문서화"},
+        {"name": "score_axis_activity", "type": "int", "nullable": false, "default": "0"},
+        {"name": "score_axis_popularity", "type": "int", "nullable": false, "default": "0"},
+        {"name": "score_axis_maintenance", "type": "int", "nullable": false, "default": "0"},
+        {"name": "star_count", "type": "int", "nullable": false, "default": "0", "note": "원본 저장소 스타"},
+        {"name": "like_count", "type": "int", "nullable": false, "default": "0"},
+        {"name": "bookmark_count", "type": "int", "nullable": false, "default": "0"},
+        {"name": "comment_count", "type": "int", "nullable": false, "default": "0"},
+        {"name": "status", "type": "varchar(20)", "nullable": false, "default": "PUBLISHED", "note": "PUBLISHED | REJECTED"},
+        {"name": "source_accessible", "type": "boolean", "nullable": false, "default": "true", "note": "false 시 '원본 접근 불가' 뱃지"},
+        {"name": "meta_updated_at", "type": "timestamptz", "nullable": true, "note": "메타 갱신일"},
+        {"name": "submission_id", "type": "uuid", "nullable": true, "note": "발행 근거 제보"},
+        {"name": "published_at", "type": "timestamptz", "nullable": true, "note": "랭킹: 발행 7일 경과 판정"},
+        {"name": "created_at", "type": "timestamptz", "nullable": false},
+        {"name": "updated_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "submissions": {
+      "owner_service": "curation-service",
+      "aggregate": "Submission",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "url", "type": "varchar(500)", "nullable": false, "note": "중복(발행/검수대기) 불가"},
+        {"name": "submitter_id", "type": "uuid", "nullable": false},
+        {"name": "status", "type": "varchar(20)", "nullable": false, "default": "PENDING", "note": "PENDING | PUBLISHED | REJECTED"},
+        {"name": "summary_line1", "type": "varchar(60)", "nullable": true},
+        {"name": "summary_line2", "type": "varchar(60)", "nullable": true},
+        {"name": "summary_line3", "type": "varchar(60)", "nullable": true},
+        {"name": "category", "type": "varchar(50)", "nullable": true},
+        {"name": "rejection_reason", "type": "varchar(500)", "nullable": true, "note": "반려 시 필수"},
+        {"name": "reviewed_by", "type": "uuid", "nullable": true},
+        {"name": "created_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "audit_logs": {
+      "owner_service": "curation-service",
+      "domain_entity": "AuditLog (소속 Aggregate: Card)",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "card_id", "type": "uuid", "nullable": false, "fk": "cards.id"},
+        {"name": "modifier_id", "type": "uuid", "nullable": false},
+        {"name": "action_type", "type": "varchar(30)", "nullable": false, "note": "PUBLISH | UPDATE | REJECT"},
+        {"name": "changed_fields", "type": "text", "nullable": true},
+        {"name": "reason", "type": "varchar(500)", "nullable": true},
+        {"name": "created_at", "type": "timestamptz", "nullable": false, "note": "= timestamp"}
+      ]
+    },
+    "reactions": {
+      "owner_service": "user-activity-service",
+      "aggregate": "Reaction",
+      "unique_constraint": ["user_id", "card_id", "type"],
+      "note": "계정당 카드당 1회 (POL-04) — 저장 구조에서 강제",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "user_id", "type": "uuid", "nullable": false},
+        {"name": "card_id", "type": "uuid", "nullable": false},
+        {"name": "type", "type": "varchar(10)", "nullable": false, "note": "LIKE | BOOKMARK"},
+        {"name": "created_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "comments": {
+      "owner_service": "user-activity-service",
+      "aggregate": "Comment",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "card_id", "type": "uuid", "nullable": false},
+        {"name": "user_id", "type": "uuid", "nullable": false},
+        {"name": "content", "type": "varchar(500)", "nullable": false, "note": "최대 500자"},
+        {"name": "report_count", "type": "int", "nullable": false, "default": "0", "note": "3건 누적 시 자동 숨김"},
+        {"name": "is_hidden", "type": "boolean", "nullable": false, "default": "false"},
+        {"name": "created_at", "type": "timestamptz", "nullable": false},
+        {"name": "updated_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "comment_reports": {
+      "owner_service": "user-activity-service",
+      "note": "댓글 신고 이력 (신고 3건 자동숨김 판정용). ⚠️ 요청 스펙 미정 — Phase 4 STOP 에서 확인 예정.",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "comment_id", "type": "uuid", "nullable": false, "fk": "comments.id"},
+        {"name": "reporter_id", "type": "uuid", "nullable": false},
+        {"name": "created_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "questions": {
+      "owner_service": "qna-service",
+      "aggregate": "Question",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "title", "type": "varchar(200)", "nullable": false},
+        {"name": "content", "type": "text", "nullable": false, "note": "비어있을 수 없음 (invariant)"},
+        {"name": "author_id", "type": "uuid", "nullable": false},
+        {"name": "answer_count", "type": "int", "nullable": false, "default": "0"},
+        {"name": "created_at", "type": "timestamptz", "nullable": false},
+        {"name": "updated_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "answers": {
+      "owner_service": "qna-service",
+      "domain_entity": "Answer (소속 Aggregate: Question)",
+      "note": "질문 삭제 시 함께 삭제 (POL-28) — FK ON DELETE CASCADE",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "question_id", "type": "uuid", "nullable": false, "fk": "questions.id ON DELETE CASCADE"},
+        {"name": "content", "type": "text", "nullable": false},
+        {"name": "author_id", "type": "uuid", "nullable": false},
+        {"name": "created_at", "type": "timestamptz", "nullable": false},
+        {"name": "updated_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "projects": {
+      "owner_service": "project-service",
+      "aggregate": "Project",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "name", "type": "varchar(100)", "nullable": false, "unique": true, "note": "2자 이상, 중복 불가"},
+        {"name": "description", "type": "text", "nullable": true},
+        {"name": "owner_id", "type": "uuid", "nullable": false, "note": "프로젝트 관리자 — 진행상황 수정 권한"},
+        {"name": "status", "type": "varchar(20)", "nullable": false, "default": "RECRUITING", "note": "RECRUITING | IN_PROGRESS | DONE"},
+        {"name": "progress", "type": "text", "nullable": true, "note": "진행 상황 메모"},
+        {"name": "tags", "type": "text", "nullable": true},
+        {"name": "created_at", "type": "timestamptz", "nullable": false},
+        {"name": "updated_at", "type": "timestamptz", "nullable": false}
+      ]
+    },
+    "ranking_snapshots": {
+      "owner_service": "ranking-batch-worker (write) / ranking-api-service (read)",
+      "aggregate": "RankingSnapshot",
+      "unique_constraint": ["snapshot_year", "week_of_year"],
+      "note": "산정식: 좋아요1 + 북마크2 + 댓글1 + 실전점수/10. 동점→북마크 많은 카드 상위. 발행 7일 미만 제외. ('year' 는 예약어라 snapshot_year 로.)",
+      "columns": [
+        {"name": "id", "type": "uuid", "pk": true},
+        {"name": "snapshot_year", "type": "int", "nullable": false},
+        {"name": "week_of_year", "type": "int", "nullable": false},
+        {"name": "entries", "type": "text", "nullable": false, "note": "JSON: 순위별 cardId/score/rank 배열"},
+        {"name": "generated_at", "type": "timestamptz", "nullable": false}
+      ]
+    }
+  }
+}
