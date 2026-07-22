@@ -31,7 +31,7 @@ const routes = [
   { path: '/projects/new', name: 'project-new', meta: { requiresAuth: true }, component: () => import('@/views/ProjectCreateView.vue') },
   { path: '/projects/:projectId', name: 'project-detail', component: () => import('@/views/ProjectDetailView.vue') },
 
-  { path: '/rankings/weekly', name: 'rankings', ...placeholder('주간 랭킹', 'Phase 7') },
+  { path: '/rankings/weekly', name: 'rankings', component: () => import('@/views/RankingView.vue') },
   { path: '/users/:userId', name: 'user-profile', ...placeholder('사용자 프로필', 'Phase 3+') },
 
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/views/NotFoundView.vue') },

@@ -29,7 +29,7 @@
 - [x] `POST /api/v1/cards/{cardId}/comments` — 댓글 작성 [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/web/CommentController.java
 - [x] `POST /api/v1/comments/{commentId}/report` — 댓글 신고 [→ 사용자 활동 서비스] (사용자 확인: 사유 없이 신고만)  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/web/CommentController.java
 - [x] `PATCH /api/v1/comments/{commentId}/visibility` — 댓글 숨김/해제 [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/web/CommentController.java
-- [ ] `GET /api/v1/rankings/weekly` — 주간 랭킹 조회 [→ 랭킹 API 서비스]  ←구현위치: 
+- [x] `GET /api/v1/rankings/weekly` — 주간 랭킹 조회 [→ 랭킹 API 서비스]  ←구현위치: BE/ranking-api-service/src/main/java/com/aicommunity/rankingapi/web/RankingController.java
 - [x] `POST /api/v1/auth/login` — 로그인 [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/web/AuthController.java
 - [x] `POST /api/v1/auth/register` — 회원가입 [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/web/AuthController.java
 
@@ -41,7 +41,7 @@
 - [x] Entity `Post` (속성 7개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Post.java
 - [x] Entity `Project` (속성 9개)  ←구현위치: BE/project-service/src/main/java/com/aicommunity/project/domain/Project.java
 - [x] Entity `Question` (속성 7개)  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/domain/Question.java
-- [ ] Entity `RankingSnapshot` (속성 5개)  ←구현위치: 
+- [x] Entity `RankingSnapshot` (속성 5개)  ←구현위치: BE/ranking-batch-worker/src/main/java/com/aicommunity/rankingbatch/domain/RankingSnapshot.java (읽기: BE/ranking-api-service/src/main/java/com/aicommunity/rankingapi/domain/RankingSnapshot.java)
 - [x] Entity `Reaction` (속성 5개)  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Reaction.java
 - [x] Entity `Submission` (속성 11개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Submission.java
 - [x] Entity `User` (속성 10개)  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/User.java
@@ -65,11 +65,11 @@
 - [x] Policy `POL-16` — 검색 결과가 없을 경우 빈 목록과 함께 '검색 결과가 없습니다.' 메시지를 표시해야 한다.  ←구현위치: FE/mobile-web/src/views/HomeView.vue + PostsView.vue (빈 상태)
 - [ ] Policy `POL-17` — 네트워크 지연으로 인한 발행 실패 시, 사용자에게 재시도 옵션을 제공해야 한다.  ←구현위치: 
 - [x] Policy `POL-18` — 댓글 신고가 3건 쌓이면 시스템은 자동으로 댓글을 가리고 큐레이터 판단을 기다려야 한다.  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Comment.java (addReport→3건 hidden) + CommentService
-- [ ] Policy `POL-19` — 동점일 경우 북마크 수가 많은 카드가 상위로 배치되어야 한다.  ←구현위치: 
+- [x] Policy `POL-19` — 동점일 경우 북마크 수가 많은 카드가 상위로 배치되어야 한다.  ←구현위치: BE/ranking-batch-worker/src/main/java/com/aicommunity/rankingbatch/service/RankingCalculator.java (tie-break bookmark desc)
 - [x] Policy `POL-20` — 로그인 없이 북마크 버튼 클릭 시 로그인 안내로 연결되어야 한다.  ←구현위치: FE/mobile-web/src/views/CardDetailView.vue (onReact→requireLogin)
 - [ ] Policy `POL-21` — 메타 정보 갱신이 API 한도로 실패할 경우, 시스템은 마지막 값을 유지하고 메타 갱신일로 오래된 값임을 표시해야 한다.  ←구현위치: 
 - [x] Policy `POL-22` — 반려된 카드는 내 서재에 '더 이상 공개되지 않는 카드예요'로 표시되어야 한다.  ←구현위치: FE/mobile-web/src/views/MyLibraryView.vue (status===REJECTED)
-- [ ] Policy `POL-23` — 발행 7일이 지나지 않은 카드는 랭킹 산정에서 제외되어야 한다.  ←구현위치: 
+- [x] Policy `POL-23` — 발행 7일이 지나지 않은 카드는 랭킹 산정에서 제외되어야 한다.  ←구현위치: BE/ranking-batch-worker/src/main/java/com/aicommunity/rankingbatch/domain/CardRankingRepository.findEligible (published_at<=now-7d)
 - [x] Policy `POL-24` — 북마크한 카드가 없을 경우, '아직 저장한 카드가 없어요. 피드에서 북마크를 눌러보세요' 메시지와 피드로 가는 버튼을 표시해야 한다.  ←구현위치: FE/mobile-web/src/views/MyLibraryView.vue (빈 상태)
 - [x] Policy `POL-25` — 비로그인 상태에서 댓글 작성 시도 시 로그인 안내로 연결되어야 한다.  ←구현위치: FE/mobile-web/src/views/CardDetailView.vue (submitComment→requireLogin)
 - [ ] Policy `POL-26` — 원본 저장소가 삭제되거나 비공개로 변경되어 자동 갱신이 실패할 경우, 카드에 '원본 접근 불가' 뱃지를 표시하고 점수 갱신을 중단해야 한다.  ←구현위치: 
@@ -101,7 +101,7 @@
 - [ ] Screen `메인 대시보드` (`/dashboard`) (→ API: API-18, API-02, API-04, API-01)  ←구현위치: 
 - [ ] Screen `사용자 프로필` (`/users/{userId}`)  ←구현위치: 
 - [x] Screen `제보하기` (`/submit`) (→ API: API-10)  ←구현위치: FE/mobile-web/src/views/SubmitView.vue
-- [ ] Screen `주간 랭킹` (`/rankings/weekly`) (→ API: API-18)  ←구현위치: 
+- [x] Screen `주간 랭킹` (`/rankings/weekly`) (→ API: API-18)  ←구현위치: FE/mobile-web/src/views/RankingView.vue
 - [x] Screen `큐레이터 검수함` (`/admin/submissions`) (→ API: API-11)  ←구현위치: FE/admin-web/src/views/SubmissionsView.vue
 - [x] Screen `카드 상세` (`/cards/{cardSlug}`) (→ API: API-16, API-13, API-02, API-15, API-12, API-14)  ←구현위치: FE/mobile-web/src/views/CardDetailView.vue (반응/댓글은 Phase 4)
 - [x] Screen `프로젝트 목록` (`/projects`) (→ API: API-07)  ←구현위치: FE/mobile-web/src/views/ProjectsView.vue
@@ -116,7 +116,7 @@
 - [x] Aggregate `Submission` (불변식 3개) [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Submission.java
 - [x] Aggregate `Project` (불변식 3개) [→ 프로젝트 서비스]  ←구현위치: BE/project-service/src/main/java/com/aicommunity/project/domain/Project.java
 - [x] Aggregate `Question` (불변식 1개) [→ Q&A 서비스]  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/domain/Question.java
-- [ ] Aggregate `RankingSnapshot` (불변식 4개) [→ 랭킹 배치 워커]  ←구현위치: 
+- [x] Aggregate `RankingSnapshot` (불변식 4개) [→ 랭킹 배치 워커]  ←구현위치: BE/ranking-batch-worker/src/main/java/com/aicommunity/rankingbatch/domain/RankingSnapshot.java + service/RankingCalculator.java
 - [x] Aggregate `Comment` (불변식 4개) [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Comment.java
 - [x] Aggregate `Reaction` (불변식 2개) [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Reaction.java
 - [x] Aggregate `User` (불변식 4개) [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/User.java
@@ -140,7 +140,7 @@
 - [x] Domain Event `CommentHidden`  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/event/ActivityEvents.java
 - [x] Domain Event `CommentReported`  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/event/ActivityEvents.java
 - [x] Domain Event `CommentUnhidden`  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/event/ActivityEvents.java
-- [ ] Domain Event `RankingSnapshotGenerated`  ←구현위치: 
+- [x] Domain Event `RankingSnapshotGenerated`  ←구현위치: BE/ranking-batch-worker/src/main/java/com/aicommunity/rankingbatch/domain/event/RankingEvents.java
 - [x] Domain Event `UserAccountLocked`  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/event/UserEvents.java
 - [x] Domain Event `UserLoggedIn`  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/event/UserEvents.java
 - [x] Domain Event `UserRegistered`  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/event/UserEvents.java

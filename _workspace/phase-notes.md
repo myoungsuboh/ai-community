@@ -63,4 +63,11 @@
   - FE: 프로젝트 목록/생성/상세(/projects, /new, /:id). 상세에서 owner 는 상태·진행메모 업데이트.
   - 검증: 단위+통합 10개 통과(총 63). curl 전 흐름(생성·owner상태변경·비owner 403·중복 409·짧은이름 400·비인증 401·상세·목록). 브라우저 프로젝트 목록 실데이터 렌더.
   - POL-29(프로젝트 삭제 시 관련 데이터 처리)는 삭제 API 가 명세에 없어 트리거 불가 → 미해당(최종 감사에서 확인).
-- [대기] Phase 7: 랭킹 — 사용자 확인 후 시작.
+- [완료] Phase 7: 랭킹
+  - ranking-batch-worker: 주간 배치(@Scheduled 월0시 UTC + 수동 트리거 POST /internal/rankings/run, ADMIN). cards 카운터+실전점수로 산정. RankingCalculator(점수=좋아요1+북마크2+댓글1+실전점수/10, 동점→북마크순 POL-19). 발행7일미만 제외(POL-23). 스냅샷 upsert + RankingSnapshotGenerated.
+  - ranking-api-service: GET /rankings/weekly → 최신 스냅샷 entries.
+  - 공용: RankingEntry(common) 직렬화 스키마 공유. 워커 무포트 대신 로컬 트리거 위해 8088 사용.
+  - FE: 주간 랭킹(/rankings/weekly) — 메달/순위/점수 표시.
+  - 검증: 단위+통합 6개(총 69). 배치 트리거→스냅샷 DB row 확인(2026-W30)→GET/weekly→화면. 점수 52.9(=20+20+5+7.9) 정확. 비관리자 트리거 403.
+  - **20개 API 전부 구현 완료.** 화면 대부분 실데이터 연동.
+- [대기] Phase 8: Cross-Cutting & Integration — 감사로깅·보안정책(OWASP/전송보안)·구조화로깅·전역에러·E2E. 사용자 확인 후 시작.
