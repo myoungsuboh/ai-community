@@ -16,6 +16,12 @@
 5. **프론트**: `FE/mobile-web`(사용자, 포트 5173), `FE/admin-web`(관리자/큐레이터, 포트 5174). Vite dev proxy 로 각 백엔드 포트에 연결. 실제 API 연동(목데이터 금지).
 6. **디자인 요구(사용자)**: FE 첫인상 중요 → "large typography" 감성(refero.design 참고). Vuetify 위에 큰 타이포/여백 중심 커스텀 테마 적용.
 
+## 디자인 (사용자 요청)
+- 사용자 요청으로 FE 전체 디자인을 refero "Karl" 스타일(햇살 노랑/친근한 블루/산호/차콜, Changa One 디스플레이)로 리디자인.
+  공유 파일(plugins/vuetify.js 테마, styles/main.scss)을 두 앱에 동일 적용. 폰트 @fontsource/changa-one 추가(Plus Jakarta Sans 제거).
+  콘텐츠 가독성 위해: 히어로/액센트=노랑, 카드=흰색+차콜 테두리(그림자 대신 라인워크). 버튼/칩=pill.
+  검증: 두 앱 빌드+린트 통과, 브라우저에서 Changa One 적용 + 히어로 #FFE600 확인.
+
 ## 스펙 갭 / 확인 필요
 - ⚠️ `POST /api/v1/comments/{commentId}/report` 요청 본문 스펙 미정 (IMPLEMENTATION-CHECKLIST). → **Phase 4 STOP 에서 사용자 확인 후 구현.** 잠정: 본문 없음 또는 `{ "reason"?: string }`.
 - `1_spack.md` 파일 손상(내용 4회 반복 + POST/GET /posts 만 상세). 나머지 API 상세 스키마는 3_architecture.md 의 API↔Service 매핑 + 2_ddd.md 이벤트 페이로드 + 응답 본문 규약으로 도출.

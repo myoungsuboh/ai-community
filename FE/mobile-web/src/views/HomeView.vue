@@ -35,14 +35,20 @@ const cards = computed(() => data.value?.content ?? [])
 
 <template>
   <div>
-    <!-- 컴팩트 히어로 -->
-    <section class="hero-glow">
-      <v-container class="container-max pt-12 pb-6">
-        <p class="eyebrow text-primary mb-3">AI 지식 공유 커뮤니티</p>
-        <h1 class="display-xl text-balance mb-4">지금의 AI를 한눈에, 함께.</h1>
-        <p class="lead text-medium-emphasis mb-2" style="max-width: 40rem">
+    <!-- 햇살 히어로 -->
+    <section class="sunny-hero">
+      <v-container class="container-max pt-12 pb-10">
+        <p class="eyebrow mb-3">AI 지식 공유 커뮤니티</p>
+        <h1 class="display-hero text-balance mb-4">지금의 AI를<br />한눈에, 함께.</h1>
+        <p class="lead mb-6" style="max-width: 40rem">
           커뮤니티가 큐레이션한 AI 레포·스킬을 실전점수로 살펴보세요.
         </p>
+        <div class="d-flex flex-wrap ga-3">
+          <v-btn size="large" color="primary" variant="flat" @click="router.push('/submit')">
+            좋은 AI 제보하기
+          </v-btn>
+          <v-btn size="large" variant="outlined" color="#2b2b2b" to="/qna">Q&amp;A 둘러보기</v-btn>
+        </div>
       </v-container>
     </section>
 
