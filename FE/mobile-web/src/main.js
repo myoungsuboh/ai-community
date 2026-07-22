@@ -22,7 +22,7 @@ app.use(createPinia())
 app.use(router)
 app.use(vuetify)
 
-// 저장된 세션(토큰) 복원 후 마운트
-useAuthStore().restore()
+// HttpOnly 쿠키 기반 silent refresh 로 세션을 복원한 뒤 마운트 (가드가 올바른 인증상태를 보도록)
+await useAuthStore().restore()
 
 app.mount('#app')

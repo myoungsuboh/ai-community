@@ -14,4 +14,7 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  build: {
+    target: 'esnext', // main.js 의 top-level await 지원
+  },
 })

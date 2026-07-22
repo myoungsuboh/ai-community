@@ -1,0 +1,18 @@
+# 통합 테스트용 — 격리된 인메모리 H2 (dev 파일 DB 와 분리). Testcontainers 는 Docker 필요로 미사용.
+spring:
+  datasource:
+    url: jdbc:h2:mem:authtest;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+jwt:
+  secret: test-secret-key-that-is-definitely-long-enough-000000
+  access-ttl-seconds: 1800
+  refresh-ttl-seconds: 604800

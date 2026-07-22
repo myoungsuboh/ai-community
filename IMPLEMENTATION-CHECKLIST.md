@@ -30,8 +30,8 @@
 - [ ] `POST /api/v1/comments/{commentId}/report` — 댓글 신고 [→ 사용자 활동 서비스] ⚠️요청스펙미정  ←구현위치: 
 - [ ] `PATCH /api/v1/comments/{commentId}/visibility` — 댓글 숨김/해제 [→ 사용자 활동 서비스]  ←구현위치: 
 - [ ] `GET /api/v1/rankings/weekly` — 주간 랭킹 조회 [→ 랭킹 API 서비스]  ←구현위치: 
-- [ ] `POST /api/v1/auth/login` — 로그인 [→ 인증 서비스]  ←구현위치: 
-- [ ] `POST /api/v1/auth/register` — 회원가입 [→ 인증 서비스]  ←구현위치: 
+- [x] `POST /api/v1/auth/login` — 로그인 [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/web/AuthController.java
+- [x] `POST /api/v1/auth/register` — 회원가입 [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/web/AuthController.java
 
 ## Entities (11)
 - [ ] Entity `Answer` (속성 6개)  ←구현위치: 
@@ -44,7 +44,7 @@
 - [ ] Entity `RankingSnapshot` (속성 5개)  ←구현위치: 
 - [ ] Entity `Reaction` (속성 5개)  ←구현위치: 
 - [ ] Entity `Submission` (속성 11개)  ←구현위치: 
-- [ ] Entity `User` (속성 10개)  ←구현위치: 
+- [x] Entity `User` (속성 10개)  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/User.java
 
 ## Policies (비즈니스 규칙) (36)
 - [ ] Policy `POL-01` — 모든 발행 카드 수정 이력은 카드에 기록되어야 한다.  ←구현위치: 
@@ -79,10 +79,10 @@
 - [ ] Policy `POL-34` — OWASP Top 10 취약점에 대한 방어 체계를 갖춰야 한다.  ←구현위치: 
 - [ ] Policy `POL-35` — 검색어에 특수문자가 포함될 경우, SQL Injection 등의 공격을 방지하기 위해 안전하게 처리해야 한다.  ←구현위치: 
 - [ ] Policy `POL-36` — 게시글 작성 시 허용되지 않는 HTML 태그는 자동으로 제거하거나 이스케이프 처리해야 한다.  ←구현위치: 
-- [ ] Policy `POL-37` — 로그인 5회 연속 실패 시 10분간 계정이 잠금 처리되어야 한다.  ←구현위치: 
+- [x] Policy `POL-37` — 로그인 5회 연속 실패 시 10분간 계정이 잠금 처리되어야 한다.  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/service/AuthService.java (MAX_LOGIN_ATTEMPTS=5, LOCK_DURATION=10m) + domain/User.registerFailedLogin
 - [ ] Policy `POL-38` — 모든 사용자 데이터는 암호화되어 저장되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-39` — 비밀번호는 최소 8자 이상이어야 한다.  ←구현위치: 
-- [ ] Policy `POL-40` — 세션은 7일간 유지되어야 한다.  ←구현위치: 
+- [x] Policy `POL-39` — 비밀번호는 최소 8자 이상이어야 한다.  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/dto/AuthDtos.java (RegisterRequest @Size min=8)
+- [x] Policy `POL-40` — 세션은 7일간 유지되어야 한다.  ←구현위치: BE/auth-service/.../service/AuthService.java (refreshTtl=7d, session_expires_at) + common/JwtTokenProvider (refresh-ttl-seconds=604800)
 
 ## Policies — NFR (성능·비기능 규칙) (4)
 > 아래 NFR 항목은 단일 구현 파일이 아니라 **검증 방법/증거**(부하테스트 명령·모니터링 설정·측정 문서 경로)를 마커 뒤에 적으세요 — 파일 경로 강요는 거짓 체크를 유도합니다.
@@ -97,7 +97,7 @@
 - [ ] Screen `게시글 상세` (`/posts/{postId}`) (→ API: API-16, API-14, API-15, API-04)  ←구현위치: 
 - [ ] Screen `게시글 작성/편집` (`/posts/new`) (→ API: API-03)  ←구현위치: 
 - [ ] Screen `내 서재` (`/my-library`) (→ API: API-17)  ←구현위치: 
-- [ ] Screen `로그인/회원가입` (`/login`) (→ API: API-19, API-20)  ←구현위치: 
+- [x] Screen `로그인/회원가입` (`/login`) (→ API: API-19, API-20)  ←구현위치: FE/mobile-web/src/views/LoginView.vue (실 API 연동: stores/auth.js + api/auth.js)
 - [ ] Screen `메인 대시보드` (`/dashboard`) (→ API: API-18, API-02, API-04, API-01)  ←구현위치: 
 - [ ] Screen `사용자 프로필` (`/users/{userId}`)  ←구현위치: 
 - [ ] Screen `제보하기` (`/submit`) (→ API: API-10)  ←구현위치: 
@@ -119,7 +119,7 @@
 - [ ] Aggregate `RankingSnapshot` (불변식 4개) [→ 랭킹 배치 워커]  ←구현위치: 
 - [ ] Aggregate `Comment` (불변식 4개) [→ 사용자 활동 서비스]  ←구현위치: 
 - [ ] Aggregate `Reaction` (불변식 2개) [→ 사용자 활동 서비스]  ←구현위치: 
-- [ ] Aggregate `User` (불변식 4개) [→ 인증 서비스]  ←구현위치: 
+- [x] Aggregate `User` (불변식 4개) [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/User.java
 
 ## Domain Entities (데이터 모델) (2)
 - [ ] Domain Entity `AuditLog` (속성 7개)  ←구현위치: 
@@ -141,9 +141,9 @@
 - [ ] Domain Event `CommentReported`  ←구현위치: 
 - [ ] Domain Event `CommentUnhidden`  ←구현위치: 
 - [ ] Domain Event `RankingSnapshotGenerated`  ←구현위치: 
-- [ ] Domain Event `UserAccountLocked`  ←구현위치: 
-- [ ] Domain Event `UserLoggedIn`  ←구현위치: 
-- [ ] Domain Event `UserRegistered`  ←구현위치: 
+- [x] Domain Event `UserAccountLocked`  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/event/UserEvents.java
+- [x] Domain Event `UserLoggedIn`  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/event/UserEvents.java
+- [x] Domain Event `UserRegistered`  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/event/UserEvents.java
 
 ## Services / Databases (12)
 - [x] Service `관리자 웹 프론트엔드` (Vue.js)  ←구현위치: FE/admin-web/

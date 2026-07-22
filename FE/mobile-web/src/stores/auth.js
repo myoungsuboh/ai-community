@@ -1,14 +1,15 @@
 import { defineStore } from 'pinia'
 import { clients, bindAuthStore } from '@/api/http'
+import { authApi } from '@/api/auth'
 
-const STORAGE_KEY = 'aic.auth'
-
-// 사용자 컨텍스트 상태. 로그인/회원가입 API 연동은 Phase 2 에서 완성.
+// 사용자 컨텍스트 상태.
+// 액세스 토큰은 메모리에만 보관(영속 저장 금지 — routing-auth 규칙),
+// 리프레시 토큰은 서버가 HttpOnly 쿠키로 관리. 새로고침 시 silent refresh 로 세션 복원.
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     accessToken: null,
-    refreshToken: null,
     user: null, // { id, email, nickname, role }
+    ready: false, // 최초 silent refresh 완료 여부
   }),
   getters: {
     isAuthenticated: (s) => !!s.accessToken,
@@ -16,59 +17,50 @@ export const useAuthStore = defineStore('auth', {
     nickname: (s) => s.user?.nickname || '',
   },
   actions: {
-    restore() {
+    setSession(data) {
+      this.accessToken = data.accessToken
+      this.user = data.user
+    },
+    async restore() {
       bindAuthStore(this)
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY)
-        if (raw) {
-          const parsed = JSON.parse(raw)
-          this.accessToken = parsed.accessToken || null
-          this.refreshToken = parsed.refreshToken || null
-          this.user = parsed.user || null
-        }
-      } catch {
-        this.clear()
-      }
+      // 페이지 로드 시 HttpOnly 쿠키로 조용히 재발급 시도 (실패는 정상 = 비로그인)
+      await this.tryRefresh()
+      this.ready = true
     },
-    persist() {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          accessToken: this.accessToken,
-          refreshToken: this.refreshToken,
-          user: this.user,
-        }),
-      )
+    async register(email, password, nickname) {
+      const data = await authApi.register(email, password, nickname)
+      this.setSession(data)
+      return data.user
     },
-    setSession({ accessToken, refreshToken, user }) {
-      this.accessToken = accessToken
-      this.refreshToken = refreshToken
-      this.user = user
-      this.persist()
+    async login(email, password) {
+      const data = await authApi.login(email, password)
+      this.setSession(data)
+      return data.user
     },
-    // 401 시 http 인터셉터가 1회 호출. 성공하면 true.
+    // http 401 인터셉터 및 restore 가 호출. 성공 시 true.
     async tryRefresh() {
-      if (!this.refreshToken) return false
       try {
-        const data = await clients.auth.post('/api/v1/auth/refresh', {
-          refreshToken: this.refreshToken,
-        })
-        this.accessToken = data.accessToken
-        this.refreshToken = data.refreshToken || this.refreshToken
-        this.persist()
+        const data = await clients.auth.post('/api/v1/auth/refresh')
+        this.setSession(data)
         return true
       } catch {
+        this.accessToken = null
+        this.user = null
         return false
       }
     },
+    async logout() {
+      try {
+        await authApi.logout()
+      } catch {
+        // 서버 실패해도 로컬 세션은 정리
+      }
+      this.accessToken = null
+      this.user = null
+    },
     clear() {
       this.accessToken = null
-      this.refreshToken = null
       this.user = null
-      localStorage.removeItem(STORAGE_KEY)
-    },
-    logout() {
-      this.clear()
     },
   },
 })
