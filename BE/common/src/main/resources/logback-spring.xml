@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  공용 로깅 설정 (skills/backEnd/structured-logging). 모든 서비스가 classpath 로 공유.
+  - 애플리케이션 로그: requestId(MDC) 포함 → 요청 단위 상관관계 추적
+  - SECURITY_AUDIT: 별도 스트림(운영에선 append-only 스토리지로 분리 권장)
+-->
+<configuration>
+    <property name="APP_PATTERN"
+              value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] req=%X{requestId:-none} %logger{32} - %msg%n"/>
+    <property name="AUDIT_PATTERN"
+              value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} [SECURITY_AUDIT] %msg%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${APP_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="AUDIT_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${AUDIT_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 보안 감사 로그: 애플리케이션 로그와 분리(별도 appender), 추가 전파 안 함 -->
+    <logger name="SECURITY_AUDIT" level="INFO" additivity="false">
+        <appender-ref ref="AUDIT_CONSOLE"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

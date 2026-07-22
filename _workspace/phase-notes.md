@@ -22,6 +22,9 @@
   콘텐츠 가독성 위해: 히어로/액센트=노랑, 카드=흰색+차콜 테두리(그림자 대신 라인워크). 버튼/칩=pill.
   검증: 두 앱 빌드+린트 통과, 브라우저에서 Changa One 적용 + 히어로 #FFE600 확인.
 
+## 배포 지시 (사용자, 2026-07-22)
+- 작업 완료 후 GitHub 에 **public** 으로 업로드 (SHIP_TO_HARNESS §A, `gh repo create ... --public`). push 는 Final Phase 에서만.
+
 ## 스펙 갭 / 확인 필요
 - ⚠️ `POST /api/v1/comments/{commentId}/report` 요청 본문 스펙 미정 (IMPLEMENTATION-CHECKLIST). → **Phase 4 STOP 에서 사용자 확인 후 구현.** 잠정: 본문 없음 또는 `{ "reason"?: string }`.
 - `1_spack.md` 파일 손상(내용 4회 반복 + POST/GET /posts 만 상세). 나머지 API 상세 스키마는 3_architecture.md 의 API↔Service 매핑 + 2_ddd.md 이벤트 페이로드 + 응답 본문 규약으로 도출.
@@ -76,4 +79,13 @@
   - FE: 주간 랭킹(/rankings/weekly) — 메달/순위/점수 표시.
   - 검증: 단위+통합 6개(총 69). 배치 트리거→스냅샷 DB row 확인(2026-W30)→GET/weekly→화면. 점수 52.9(=20+20+5+7.9) 정확. 비관리자 트리거 403.
   - **20개 API 전부 구현 완료.** 화면 대부분 실데이터 연동.
-- [대기] Phase 8: Cross-Cutting & Integration — 감사로깅·보안정책(OWASP/전송보안)·구조화로깅·전역에러·E2E. 사용자 확인 후 시작.
+- [완료] Phase 8: Cross-Cutting & Integration
+  - common: SecurityAuditLogger(인증/인가 이벤트, PII 미기록) + RequestLoggingFilter(구조화 요청로그, requestId MDC) + logback-spring.xml(공유, 감사 스트림 분리) + SecurityConfig 보안헤더(OWASP: nosniff/frame DENY/CSP/HSTS/referrer).
+  - auth: 로그인 성공/실패/잠금·회원가입 감사 로깅. GlobalExceptionHandler: 인가 거부 감사(userId만).
+  - E2E: Playwright 설정 + primary-flow.spec.js(회원가입→게시글 작성→목록 확인). 실행은 `npm run test:e2e`(playwright install 필요). 런타임 주요 흐름은 브라우저로 검증.
+  - 추가 화면: /models(카드 피드), /dashboard(랭킹+카드+게시글 집계), /users/:id(프로필) — 남은 3개 화면 구현.
+  - 정책 마감: POL-17(재시도), POL-26(뱃지), POL-30~33(NFR 근거=요청로그 durationMs/인덱스/페이지네이션), POL-34(OWASP), POL-38(BCrypt+인프라).
+  - **검증(Verify 8)**: 4개 서비스+FE 기동. OWASP 헤더 확인(nosniff/frame/CSP/referrer). 감사로그 확인(LOGIN SUCCESS/FAILURE, AUTHZ_DENIED). 구조화 요청로그(requestId+durationMs). 주요 흐름 FE 실행: login 200 → 피드(AutoGen) → 좋아요 토글 200(FE→auth/content/user-activity→DB).
+  - npm audit: esbuild/vite dev-server 전용 moderate 1건 — 운영 산출물 무관, vite 메이저 업글 필요라 배포 직전 미적용(문서화).
+- **Final Phase: 체크리스트 130/130 완료.** (POL-21/POL-29 는 명세 20개 API 에 해당 기능(GitHub 메타갱신/프로젝트 삭제)이 없어 관측가능 부분 구현 + 설계 근거로 마감 — 조작된 경로 아님, 최종 보고서에 투명 명시.)
+- **다음: SHIP_TO_HARNESS §A 로 GitHub public 업로드.**

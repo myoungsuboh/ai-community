@@ -41,6 +41,7 @@ class AuthServiceTest {
     @Mock JwtTokenProvider tokenProvider;
     @Mock RefreshTokenStore refreshTokenStore;
     @Mock ApplicationEventPublisher events;
+    @Mock com.aicommunity.common.observability.SecurityAuditLogger audit;
 
     Clock clock = Clock.fixed(Instant.parse("2026-07-22T00:00:00Z"), ZoneOffset.UTC);
     AuthService authService;
@@ -48,7 +49,7 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         authService = new AuthService(userRepository, passwordEncoder, tokenProvider,
-                refreshTokenStore, events, clock);
+                refreshTokenStore, events, audit, clock);
     }
 
     private void stubTokenIssuance() {

@@ -33,16 +33,19 @@ public class AuthService {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenStore refreshTokenStore;
     private final ApplicationEventPublisher events;
+    private final com.aicommunity.common.observability.SecurityAuditLogger audit;
     private final Clock clock;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                        JwtTokenProvider tokenProvider, RefreshTokenStore refreshTokenStore,
-                       ApplicationEventPublisher events, Clock clock) {
+                       ApplicationEventPublisher events,
+                       com.aicommunity.common.observability.SecurityAuditLogger audit, Clock clock) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
         this.refreshTokenStore = refreshTokenStore;
         this.events = events;
+        this.audit = audit;
         this.clock = clock;
     }
 
@@ -59,6 +62,7 @@ public class AuthService {
         userRepository.save(user);
         events.publishEvent(new UserEvents.UserRegistered(
                 user.getId(), user.getEmail(), user.getNickname(), OffsetDateTime.now(clock)));
+        audit.authSuccess("REGISTER", user.getId());
         return issueTokens(user);
     }
 
@@ -69,15 +73,18 @@ public class AuthService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS));
 
         if (user.isLocked(clock)) {
+            audit.authFailure("LOGIN", "ACCOUNT_LOCKED");
             throw new BusinessException(ErrorCode.ACCOUNT_LOCKED);
         }
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             boolean lockedNow = user.registerFailedLogin(MAX_LOGIN_ATTEMPTS, LOCK_DURATION, clock);
             userRepository.save(user);
+            audit.authFailure("LOGIN", "INVALID_CREDENTIALS");
             if (lockedNow) {
                 events.publishEvent(new UserEvents.UserAccountLocked(
                         user.getId(), user.getLockedUntil(), OffsetDateTime.now(clock)));
+                audit.accountLocked(user.getId());
                 throw new BusinessException(ErrorCode.ACCOUNT_LOCKED);
             }
             throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
@@ -86,6 +93,7 @@ public class AuthService {
         user.onSuccessfulLogin(tokenProvider.refreshTtl(), clock);
         userRepository.save(user);
         events.publishEvent(new UserEvents.UserLoggedIn(user.getId(), OffsetDateTime.now(clock)));
+        audit.authSuccess("LOGIN", user.getId());
         return issueTokens(user);
     }
 

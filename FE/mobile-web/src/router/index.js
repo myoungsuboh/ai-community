@@ -1,21 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-// 화면 라우팅 (IMPLEMENTATION-CHECKLIST Screens 기준).
-// 아직 구현 전인 화면은 PlaceholderView 로 연결하고 담당 Phase 를 표기한다.
-const placeholder = (title, phase) => ({
-  component: () => import('@/views/PlaceholderView.vue'),
-  props: { title, phase },
-})
-
+// 화면 라우팅 (IMPLEMENTATION-CHECKLIST Screens 기준). 모든 화면 실제 구현 완료.
 const routes = [
   { path: '/', redirect: '/home' },
   { path: '/home', name: 'home', component: () => import('@/views/HomeView.vue') },
 
   { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue') },
 
-  { path: '/dashboard', name: 'dashboard', ...placeholder('메인 대시보드', 'Phase 3+') },
-  { path: '/models', name: 'models', ...placeholder('AI 모델/코드 공유', 'Phase 3') },
+  { path: '/dashboard', name: 'dashboard', component: () => import('@/views/DashboardView.vue') },
+  { path: '/models', name: 'models', component: () => import('@/views/ModelsView.vue') },
 
   { path: '/posts', name: 'posts', component: () => import('@/views/PostsView.vue') },
   { path: '/posts/new', name: 'post-new', meta: { requiresAuth: true }, component: () => import('@/views/PostCreateView.vue') },
@@ -32,7 +26,7 @@ const routes = [
   { path: '/projects/:projectId', name: 'project-detail', component: () => import('@/views/ProjectDetailView.vue') },
 
   { path: '/rankings/weekly', name: 'rankings', component: () => import('@/views/RankingView.vue') },
-  { path: '/users/:userId', name: 'user-profile', ...placeholder('사용자 프로필', 'Phase 3+') },
+  { path: '/users/:userId', name: 'user-profile', component: () => import('@/views/UserProfileView.vue') },
 
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/views/NotFoundView.vue') },
 ]

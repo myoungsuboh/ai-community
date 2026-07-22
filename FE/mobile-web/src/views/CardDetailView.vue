@@ -147,6 +147,10 @@ function fmt(d) {
               북마크 {{ card.bookmarkCount }}
             </v-btn>
           </div>
+          <p v-if="card.metaUpdatedAt" class="text-caption text-medium-emphasis mt-2">
+            메타 갱신일: {{ fmt(card.metaUpdatedAt) }}
+            <span v-if="!card.sourceAccessible">· 원본 접근 불가로 오래된 값일 수 있어요</span>
+          </p>
         </v-col>
 
         <v-col cols="12" md="4">

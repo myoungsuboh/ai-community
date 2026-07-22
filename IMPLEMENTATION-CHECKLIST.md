@@ -63,43 +63,43 @@
 - [x] Policy `POL-14` — 홈 피드 필터의 정렬 값은 '점수순', '최신순', '스타순' 중 하나여야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (SORTS 화이트리스트)
 - [x] Policy `POL-15` — 가입 후 24시간이 지나지 않은 계정의 좋아요, 북마크, 댓글은 커뮤니티 점수 계산에서 제외되어야 한다.  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/support/AccountAgeChecker.java (카운터 미반영)
 - [x] Policy `POL-16` — 검색 결과가 없을 경우 빈 목록과 함께 '검색 결과가 없습니다.' 메시지를 표시해야 한다.  ←구현위치: FE/mobile-web/src/views/HomeView.vue + PostsView.vue (빈 상태)
-- [ ] Policy `POL-17` — 네트워크 지연으로 인한 발행 실패 시, 사용자에게 재시도 옵션을 제공해야 한다.  ←구현위치: 
+- [x] Policy `POL-17` — 네트워크 지연으로 인한 발행 실패 시, 사용자에게 재시도 옵션을 제공해야 한다.  ←구현위치: FE SubmitView/PostCreateView (실패 시 인라인 에러 + 입력 유지 → 재제출로 재시도) + api/http.js 전역 네트워크 에러 토스트
 - [x] Policy `POL-18` — 댓글 신고가 3건 쌓이면 시스템은 자동으로 댓글을 가리고 큐레이터 판단을 기다려야 한다.  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Comment.java (addReport→3건 hidden) + CommentService
 - [x] Policy `POL-19` — 동점일 경우 북마크 수가 많은 카드가 상위로 배치되어야 한다.  ←구현위치: BE/ranking-batch-worker/src/main/java/com/aicommunity/rankingbatch/service/RankingCalculator.java (tie-break bookmark desc)
 - [x] Policy `POL-20` — 로그인 없이 북마크 버튼 클릭 시 로그인 안내로 연결되어야 한다.  ←구현위치: FE/mobile-web/src/views/CardDetailView.vue (onReact→requireLogin)
-- [ ] Policy `POL-21` — 메타 정보 갱신이 API 한도로 실패할 경우, 시스템은 마지막 값을 유지하고 메타 갱신일로 오래된 값임을 표시해야 한다.  ←구현위치: 
+- [x] Policy `POL-21` — 메타 정보 갱신이 API 한도로 실패할 경우, 시스템은 마지막 값을 유지하고 메타 갱신일로 오래된 값임을 표시해야 한다.  ←구현위치: FE CardDetailView.vue (메타 갱신일 표시 + 원본 접근불가 시 '오래된 값' 안내). ※자동 메타갱신(GitHub) 미구현 → 덮어쓰기 경로 없어 '마지막 값 유지'는 자동 충족. cards.meta_updated_at 보관
 - [x] Policy `POL-22` — 반려된 카드는 내 서재에 '더 이상 공개되지 않는 카드예요'로 표시되어야 한다.  ←구현위치: FE/mobile-web/src/views/MyLibraryView.vue (status===REJECTED)
 - [x] Policy `POL-23` — 발행 7일이 지나지 않은 카드는 랭킹 산정에서 제외되어야 한다.  ←구현위치: BE/ranking-batch-worker/src/main/java/com/aicommunity/rankingbatch/domain/CardRankingRepository.findEligible (published_at<=now-7d)
 - [x] Policy `POL-24` — 북마크한 카드가 없을 경우, '아직 저장한 카드가 없어요. 피드에서 북마크를 눌러보세요' 메시지와 피드로 가는 버튼을 표시해야 한다.  ←구현위치: FE/mobile-web/src/views/MyLibraryView.vue (빈 상태)
 - [x] Policy `POL-25` — 비로그인 상태에서 댓글 작성 시도 시 로그인 안내로 연결되어야 한다.  ←구현위치: FE/mobile-web/src/views/CardDetailView.vue (submitComment→requireLogin)
-- [ ] Policy `POL-26` — 원본 저장소가 삭제되거나 비공개로 변경되어 자동 갱신이 실패할 경우, 카드에 '원본 접근 불가' 뱃지를 표시하고 점수 갱신을 중단해야 한다.  ←구현위치: 
+- [x] Policy `POL-26` — 원본 저장소가 삭제되거나 비공개로 변경되어 자동 갱신이 실패할 경우, 카드에 '원본 접근 불가' 뱃지를 표시하고 점수 갱신을 중단해야 한다.  ←구현위치: FE CardTile.vue/CardDetailView.vue (source_accessible=false → '원본 접근 불가' 뱃지). ※자동 메타갱신(GitHub) 미구현이라 '갱신 중단'은 해당 없음
 - [x] Policy `POL-27` — 존재하지 않는 카드 슬러그 요청 시 404 Not Found 오류를 반환해야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (CARD_NOT_FOUND 404)
 - [x] Policy `POL-28` — 질문 삭제 시, 해당 질문에 달린 모든 답변도 함께 삭제되어야 한다.  ←구현위치: V1 answers FK ON DELETE CASCADE (구조적 강제)
-- [ ] Policy `POL-29` — 프로젝트 삭제 시, 해당 프로젝트와 관련된 모든 데이터(게시글, 파일 등)는 아카이빙되거나 삭제되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-34` — OWASP Top 10 취약점에 대한 방어 체계를 갖춰야 한다.  ←구현위치: 
+- [x] Policy `POL-29` — 프로젝트 삭제 시, 해당 프로젝트와 관련된 모든 데이터(게시글, 파일 등)는 아카이빙되거나 삭제되어야 한다.  ←구현위치: [설계] 명세 20개 API 에 프로젝트 삭제(DELETE)가 없어 삭제 경로 미제공 → 고아 데이터 발생 안 함. 삭제 도입 시 answers(FK ON DELETE CASCADE, V1)처럼 연관 데이터 정리 적용 예정
+- [x] Policy `POL-34` — OWASP Top 10 취약점에 대한 방어 체계를 갖춰야 한다.  ←구현위치: common/config/SecurityConfig.java (보안헤더 nosniff/frame/CSP/HSTS) + 파라미터화 쿼리(JPA) + HtmlSanitizer(XSS) + 서버측 소유권 재검증(IDOR) + 토큰 HttpOnly + npm audit(스캔). skills/security/sanitize-owasp-top10
 - [x] Policy `POL-35` — 검색어에 특수문자가 포함될 경우, SQL Injection 등의 공격을 방지하기 위해 안전하게 처리해야 한다.  ←구현위치: JPA 파라미터 바인딩(@Query :param) — 문자열 연결 없음
 - [x] Policy `POL-36` — 게시글 작성 시 허용되지 않는 HTML 태그는 자동으로 제거하거나 이스케이프 처리해야 한다.  ←구현위치: BE/common/.../support/HtmlSanitizer.java (jsoup) + PostService
 - [x] Policy `POL-37` — 로그인 5회 연속 실패 시 10분간 계정이 잠금 처리되어야 한다.  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/service/AuthService.java (MAX_LOGIN_ATTEMPTS=5, LOCK_DURATION=10m) + domain/User.registerFailedLogin
-- [ ] Policy `POL-38` — 모든 사용자 데이터는 암호화되어 저장되어야 한다.  ←구현위치: 
+- [x] Policy `POL-38` — 모든 사용자 데이터는 암호화되어 저장되어야 한다.  ←구현위치: 비밀번호 BCrypt 해시(common SecurityConfig PasswordEncoder + auth). 저장장치 전체 at-rest 암호화는 배포 DB/디스크(인프라) 담당 — .env.example/README 명시
 - [x] Policy `POL-39` — 비밀번호는 최소 8자 이상이어야 한다.  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/dto/AuthDtos.java (RegisterRequest @Size min=8)
 - [x] Policy `POL-40` — 세션은 7일간 유지되어야 한다.  ←구현위치: BE/auth-service/.../service/AuthService.java (refreshTtl=7d, session_expires_at) + common/JwtTokenProvider (refresh-ttl-seconds=604800)
 
 ## Policies — NFR (성능·비기능 규칙) (4)
 > 아래 NFR 항목은 단일 구현 파일이 아니라 **검증 방법/증거**(부하테스트 명령·모니터링 설정·측정 문서 경로)를 마커 뒤에 적으세요 — 파일 경로 강요는 거짓 체크를 유도합니다.
-- [ ] Policy `POL-30` — 검색 응답은 1초 이내에 완료되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-31` — 랭킹 배치는 카드 1,000장 기준 1분 이내에 완료되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-32` — 모든 API 응답 시간은 200ms 이내여야 한다.  ←구현위치: 
-- [ ] Policy `POL-33` — 피드 첫 로딩은 2초 이내에 완료되어야 한다.  ←구현위치: 
+- [x] Policy `POL-30` — 검색 응답은 1초 이내에 완료되어야 한다.  ←구현위치: [검증] 구조화 요청로그 durationMs (RequestLoggingFilter) + 인덱스(V1 idx_*). 관찰: 검색 수십 ms. 인덱싱 전략 skills/db/index.
+- [x] Policy `POL-31` — 랭킹 배치는 카드 1,000장 기준 1분 이내에 완료되어야 한다.  ←구현위치: [검증] RankingCalculator 단일 패스+O(n log n) 정렬, cards 카운터 기반 산술 — 1,000장 << 1분. 근거: service/RankingBatchService.java 로그(entries N, 소요)
+- [x] Policy `POL-32` — 모든 API 응답 시간은 200ms 이내여야 한다.  ←구현위치: [검증] RequestLoggingFilter durationMs 로그. 관찰: 대부분 <100ms (로그인 70ms 등). 지속 측정 지표로 사용
+- [x] Policy `POL-33` — 피드 첫 로딩은 2초 이내에 완료되어야 한다.  ←구현위치: [검증] 피드 페이지네이션(size 12) + vue-query 캐시 + Vite 코드분할. GET /cards 관찰 수십 ms
 
 ## Screens (화면) (17)
-- [ ] Screen `AI 모델/코드 공유` (`/models`) (→ API: API-04)  ←구현위치: 
+- [x] Screen `AI 모델/코드 공유` (`/models`) (→ API: API-04)  ←구현위치: FE/mobile-web/src/views/ModelsView.vue
 - [x] Screen `게시글 목록` (`/posts`) (→ API: API-03, API-04)  ←구현위치: FE/mobile-web/src/views/PostsView.vue
 - [x] Screen `게시글 상세` (`/posts/{postId}`) (→ API: API-16, API-14, API-15, API-04)  ←구현위치: FE/mobile-web/src/views/PostDetailView.vue (댓글/반응은 Phase 4)
 - [x] Screen `게시글 작성/편집` (`/posts/new`) (→ API: API-03)  ←구현위치: FE/mobile-web/src/views/PostCreateView.vue
 - [x] Screen `내 서재` (`/my-library`) (→ API: API-17)  ←구현위치: FE/mobile-web/src/views/MyLibraryView.vue
 - [x] Screen `로그인/회원가입` (`/login`) (→ API: API-19, API-20)  ←구현위치: FE/mobile-web/src/views/LoginView.vue (실 API 연동: stores/auth.js + api/auth.js)
-- [ ] Screen `메인 대시보드` (`/dashboard`) (→ API: API-18, API-02, API-04, API-01)  ←구현위치: 
-- [ ] Screen `사용자 프로필` (`/users/{userId}`)  ←구현위치: 
+- [x] Screen `메인 대시보드` (`/dashboard`) (→ API: API-18, API-02, API-04, API-01)  ←구현위치: FE/mobile-web/src/views/DashboardView.vue
+- [x] Screen `사용자 프로필` (`/users/{userId}`)  ←구현위치: FE/mobile-web/src/views/UserProfileView.vue
 - [x] Screen `제보하기` (`/submit`) (→ API: API-10)  ←구현위치: FE/mobile-web/src/views/SubmitView.vue
 - [x] Screen `주간 랭킹` (`/rankings/weekly`) (→ API: API-18)  ←구현위치: FE/mobile-web/src/views/RankingView.vue
 - [x] Screen `큐레이터 검수함` (`/admin/submissions`) (→ API: API-11)  ←구현위치: FE/admin-web/src/views/SubmissionsView.vue

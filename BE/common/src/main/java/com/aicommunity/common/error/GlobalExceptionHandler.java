@@ -21,6 +21,12 @@ public class GlobalExceptionHandler {
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    private final com.aicommunity.common.observability.SecurityAuditLogger audit;
+
+    public GlobalExceptionHandler(com.aicommunity.common.observability.SecurityAuditLogger audit) {
+        this.audit = audit;
+    }
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusiness(BusinessException ex, HttpServletRequest req) {
         ErrorCode code = ex.getErrorCode();
@@ -53,6 +59,13 @@ public class GlobalExceptionHandler {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean anonymous = auth == null || !auth.isAuthenticated()
                 || "anonymousUser".equals(String.valueOf(auth.getPrincipal()));
+        String actor = "anonymous";
+        if (!anonymous) {
+            Object principal = auth.getPrincipal();
+            actor = (principal instanceof com.aicommunity.common.security.UserPrincipal up)
+                    ? up.id().toString() : "authenticated"; // PII(이메일) 미기록
+        }
+        audit.authorizationDenied(req.getRequestURI(), actor);
         ErrorCode code = anonymous ? ErrorCode.UNAUTHORIZED : ErrorCode.FORBIDDEN;
         return ResponseEntity.status(code.status())
                 .body(ErrorResponse.of(code.status().value(), code.name(), code.defaultMessage(), req.getRequestURI()));
