@@ -24,11 +24,11 @@
 - [x] `POST /api/v1/submissions` — URL 제보 [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/web/SubmissionController.java
 - [x] `PATCH /api/v1/submissions/{submissionId}/review` — 제보 검수 및 발행/반려 [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/web/SubmissionController.java
 - [x] `PATCH /api/v1/cards/{cardId}` — 발행 카드 수정 [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/web/CardController.java
-- [ ] `POST /api/v1/cards/{cardId}/reactions` — 좋아요 및 북마크 토글 [→ 사용자 활동 서비스]  ←구현위치: 
-- [ ] `GET /api/v1/users/{userId}/bookmarks` — 내 서재 조회 [→ 사용자 활동 서비스]  ←구현위치: 
-- [ ] `POST /api/v1/cards/{cardId}/comments` — 댓글 작성 [→ 사용자 활동 서비스]  ←구현위치: 
-- [ ] `POST /api/v1/comments/{commentId}/report` — 댓글 신고 [→ 사용자 활동 서비스] ⚠️요청스펙미정  ←구현위치: 
-- [ ] `PATCH /api/v1/comments/{commentId}/visibility` — 댓글 숨김/해제 [→ 사용자 활동 서비스]  ←구현위치: 
+- [x] `POST /api/v1/cards/{cardId}/reactions` — 좋아요 및 북마크 토글 [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/web/ReactionController.java
+- [x] `GET /api/v1/users/{userId}/bookmarks` — 내 서재 조회 [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/web/LibraryController.java
+- [x] `POST /api/v1/cards/{cardId}/comments` — 댓글 작성 [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/web/CommentController.java
+- [x] `POST /api/v1/comments/{commentId}/report` — 댓글 신고 [→ 사용자 활동 서비스] (사용자 확인: 사유 없이 신고만)  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/web/CommentController.java
+- [x] `PATCH /api/v1/comments/{commentId}/visibility` — 댓글 숨김/해제 [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/web/CommentController.java
 - [ ] `GET /api/v1/rankings/weekly` — 주간 랭킹 조회 [→ 랭킹 API 서비스]  ←구현위치: 
 - [x] `POST /api/v1/auth/login` — 로그인 [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/web/AuthController.java
 - [x] `POST /api/v1/auth/register` — 회원가입 [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/web/AuthController.java
@@ -37,23 +37,23 @@
 - [ ] Entity `Answer` (속성 6개)  ←구현위치: 
 - [x] Entity `AuditLog` (속성 8개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/AuditLog.java
 - [x] Entity `Card` (속성 24개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Card.java (읽기: BE/content-service/.../domain/Card.java)
-- [ ] Entity `Comment` (속성 8개)  ←구현위치: 
+- [x] Entity `Comment` (속성 8개)  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Comment.java
 - [x] Entity `Post` (속성 7개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Post.java
 - [ ] Entity `Project` (속성 9개)  ←구현위치: 
 - [ ] Entity `Question` (속성 7개)  ←구현위치: 
 - [ ] Entity `RankingSnapshot` (속성 5개)  ←구현위치: 
-- [ ] Entity `Reaction` (속성 5개)  ←구현위치: 
+- [x] Entity `Reaction` (속성 5개)  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Reaction.java
 - [x] Entity `Submission` (속성 11개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Submission.java
 - [x] Entity `User` (속성 10개)  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/User.java
 
 ## Policies (비즈니스 규칙) (36)
 - [x] Policy `POL-01` — 모든 발행 카드 수정 이력은 카드에 기록되어야 한다.  ←구현위치: BE/curation-service/.../service/CardService.java + SubmissionService.java (AuditLog)
-- [ ] Policy `POL-02` — 댓글 작성은 사용자당 분당 3건으로 제한되어야 한다.  ←구현위치: 
+- [x] Policy `POL-02` — 댓글 작성은 사용자당 분당 3건으로 제한되어야 한다.  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/service/CommentService.java (PER_MINUTE_LIMIT=3 → COMMENT_RATE_LIMITED 429)
 - [x] Policy `POL-03` — 제보는 계정당 하루 5건으로 제한되어야 한다.  ←구현위치: BE/curation-service/.../service/SubmissionService.java (DAILY_LIMIT=5 → SUBMISSION_LIMIT_EXCEEDED)
-- [ ] Policy `POL-04` — 좋아요 및 북마크는 계정당 카드당 1회만 가능하도록 저장 구조에서 강제되어야 한다.  ←구현위치: 
+- [x] Policy `POL-04` — 좋아요 및 북마크는 계정당 카드당 1회만 가능하도록 저장 구조에서 강제되어야 한다.  ←구현위치: V1 uq_reactions_user_card_type + ReactionService 토글
 - [x] Policy `POL-05` — URL 제보 시 잘못된 URL 형식은 422 Unprocessable Entity 오류로 거부되어야 한다.  ←구현위치: BE/curation-service/.../service/SubmissionService.java (validateUrl → INVALID_URL 422)
 - [x] Policy `POL-06` — 게시글 제목은 5자 미만, 내용은 10자 미만일 수 없다.  ←구현위치: BE/curation-service/.../dto/PostDtos.java (@Size)
-- [ ] Policy `POL-07` — 댓글 내용은 최대 500자여야 한다.  ←구현위치: 
+- [x] Policy `POL-07` — 댓글 내용은 최대 500자여야 한다.  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/dto/ActivityDtos.java (@Size max=500) + Comment length
 - [x] Policy `POL-08` — 반려 시 반려 사유는 필수 입력되어야 한다.  ←구현위치: BE/curation-service/.../service/SubmissionService.java (REJECTION_REASON_REQUIRED)
 - [x] Policy `POL-09` — 발행 시 4축 합계와 총점이 일치하지 않으면 발행을 거부해야 한다.  ←구현위치: BE/curation-service/.../domain/Card.java (총점=4축 합 강제)
 - [x] Policy `POL-10` — 발행 카드 수정 시 실전점수 변경 사유는 필수 입력되어야 한다.  ←구현위치: BE/curation-service/.../service/CardService.java (SCORE_REASON_REQUIRED)
@@ -61,17 +61,17 @@
 - [ ] Policy `POL-12` — 프로젝트명은 2자 미만이거나 이미 존재하는 프로젝트명일 수 없다.  ←구현위치: 
 - [x] Policy `POL-13` — 홈 피드 필터의 검색어는 1~50자 이내, 최소점수는 0~100 정수여야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (minScore 0~100) + curation PostService.search (검색어 ≤50)
 - [x] Policy `POL-14` — 홈 피드 필터의 정렬 값은 '점수순', '최신순', '스타순' 중 하나여야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (SORTS 화이트리스트)
-- [ ] Policy `POL-15` — 가입 후 24시간이 지나지 않은 계정의 좋아요, 북마크, 댓글은 커뮤니티 점수 계산에서 제외되어야 한다.  ←구현위치: 
+- [x] Policy `POL-15` — 가입 후 24시간이 지나지 않은 계정의 좋아요, 북마크, 댓글은 커뮤니티 점수 계산에서 제외되어야 한다.  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/support/AccountAgeChecker.java (카운터 미반영)
 - [x] Policy `POL-16` — 검색 결과가 없을 경우 빈 목록과 함께 '검색 결과가 없습니다.' 메시지를 표시해야 한다.  ←구현위치: FE/mobile-web/src/views/HomeView.vue + PostsView.vue (빈 상태)
 - [ ] Policy `POL-17` — 네트워크 지연으로 인한 발행 실패 시, 사용자에게 재시도 옵션을 제공해야 한다.  ←구현위치: 
-- [ ] Policy `POL-18` — 댓글 신고가 3건 쌓이면 시스템은 자동으로 댓글을 가리고 큐레이터 판단을 기다려야 한다.  ←구현위치: 
+- [x] Policy `POL-18` — 댓글 신고가 3건 쌓이면 시스템은 자동으로 댓글을 가리고 큐레이터 판단을 기다려야 한다.  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Comment.java (addReport→3건 hidden) + CommentService
 - [ ] Policy `POL-19` — 동점일 경우 북마크 수가 많은 카드가 상위로 배치되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-20` — 로그인 없이 북마크 버튼 클릭 시 로그인 안내로 연결되어야 한다.  ←구현위치: 
+- [x] Policy `POL-20` — 로그인 없이 북마크 버튼 클릭 시 로그인 안내로 연결되어야 한다.  ←구현위치: FE/mobile-web/src/views/CardDetailView.vue (onReact→requireLogin)
 - [ ] Policy `POL-21` — 메타 정보 갱신이 API 한도로 실패할 경우, 시스템은 마지막 값을 유지하고 메타 갱신일로 오래된 값임을 표시해야 한다.  ←구현위치: 
-- [ ] Policy `POL-22` — 반려된 카드는 내 서재에 '더 이상 공개되지 않는 카드예요'로 표시되어야 한다.  ←구현위치: 
+- [x] Policy `POL-22` — 반려된 카드는 내 서재에 '더 이상 공개되지 않는 카드예요'로 표시되어야 한다.  ←구현위치: FE/mobile-web/src/views/MyLibraryView.vue (status===REJECTED)
 - [ ] Policy `POL-23` — 발행 7일이 지나지 않은 카드는 랭킹 산정에서 제외되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-24` — 북마크한 카드가 없을 경우, '아직 저장한 카드가 없어요. 피드에서 북마크를 눌러보세요' 메시지와 피드로 가는 버튼을 표시해야 한다.  ←구현위치: 
-- [ ] Policy `POL-25` — 비로그인 상태에서 댓글 작성 시도 시 로그인 안내로 연결되어야 한다.  ←구현위치: 
+- [x] Policy `POL-24` — 북마크한 카드가 없을 경우, '아직 저장한 카드가 없어요. 피드에서 북마크를 눌러보세요' 메시지와 피드로 가는 버튼을 표시해야 한다.  ←구현위치: FE/mobile-web/src/views/MyLibraryView.vue (빈 상태)
+- [x] Policy `POL-25` — 비로그인 상태에서 댓글 작성 시도 시 로그인 안내로 연결되어야 한다.  ←구현위치: FE/mobile-web/src/views/CardDetailView.vue (submitComment→requireLogin)
 - [ ] Policy `POL-26` — 원본 저장소가 삭제되거나 비공개로 변경되어 자동 갱신이 실패할 경우, 카드에 '원본 접근 불가' 뱃지를 표시하고 점수 갱신을 중단해야 한다.  ←구현위치: 
 - [x] Policy `POL-27` — 존재하지 않는 카드 슬러그 요청 시 404 Not Found 오류를 반환해야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (CARD_NOT_FOUND 404)
 - [ ] Policy `POL-28` — 질문 삭제 시, 해당 질문에 달린 모든 답변도 함께 삭제되어야 한다.  ←구현위치: 
@@ -96,7 +96,7 @@
 - [x] Screen `게시글 목록` (`/posts`) (→ API: API-03, API-04)  ←구현위치: FE/mobile-web/src/views/PostsView.vue
 - [x] Screen `게시글 상세` (`/posts/{postId}`) (→ API: API-16, API-14, API-15, API-04)  ←구현위치: FE/mobile-web/src/views/PostDetailView.vue (댓글/반응은 Phase 4)
 - [x] Screen `게시글 작성/편집` (`/posts/new`) (→ API: API-03)  ←구현위치: FE/mobile-web/src/views/PostCreateView.vue
-- [ ] Screen `내 서재` (`/my-library`) (→ API: API-17)  ←구현위치: 
+- [x] Screen `내 서재` (`/my-library`) (→ API: API-17)  ←구현위치: FE/mobile-web/src/views/MyLibraryView.vue
 - [x] Screen `로그인/회원가입` (`/login`) (→ API: API-19, API-20)  ←구현위치: FE/mobile-web/src/views/LoginView.vue (실 API 연동: stores/auth.js + api/auth.js)
 - [ ] Screen `메인 대시보드` (`/dashboard`) (→ API: API-18, API-02, API-04, API-01)  ←구현위치: 
 - [ ] Screen `사용자 프로필` (`/users/{userId}`)  ←구현위치: 
@@ -117,8 +117,8 @@
 - [ ] Aggregate `Project` (불변식 3개) [→ 프로젝트 서비스]  ←구현위치: 
 - [ ] Aggregate `Question` (불변식 1개) [→ Q&A 서비스]  ←구현위치: 
 - [ ] Aggregate `RankingSnapshot` (불변식 4개) [→ 랭킹 배치 워커]  ←구현위치: 
-- [ ] Aggregate `Comment` (불변식 4개) [→ 사용자 활동 서비스]  ←구현위치: 
-- [ ] Aggregate `Reaction` (불변식 2개) [→ 사용자 활동 서비스]  ←구현위치: 
+- [x] Aggregate `Comment` (불변식 4개) [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Comment.java
+- [x] Aggregate `Reaction` (불변식 2개) [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Reaction.java
 - [x] Aggregate `User` (불변식 4개) [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/User.java
 
 ## Domain Entities (데이터 모델) (2)
@@ -135,11 +135,11 @@
 - [x] Domain Event `CardPublished`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
 - [x] Domain Event `CardRejected`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
 - [x] Domain Event `CardUpdated`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
-- [ ] Domain Event `ReactionToggled`  ←구현위치: 
-- [ ] Domain Event `CommentCreated`  ←구현위치: 
-- [ ] Domain Event `CommentHidden`  ←구현위치: 
-- [ ] Domain Event `CommentReported`  ←구현위치: 
-- [ ] Domain Event `CommentUnhidden`  ←구현위치: 
+- [x] Domain Event `ReactionToggled`  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/event/ActivityEvents.java
+- [x] Domain Event `CommentCreated`  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/event/ActivityEvents.java
+- [x] Domain Event `CommentHidden`  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/event/ActivityEvents.java
+- [x] Domain Event `CommentReported`  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/event/ActivityEvents.java
+- [x] Domain Event `CommentUnhidden`  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/event/ActivityEvents.java
 - [ ] Domain Event `RankingSnapshotGenerated`  ←구현위치: 
 - [x] Domain Event `UserAccountLocked`  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/event/UserEvents.java
 - [x] Domain Event `UserLoggedIn`  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/event/UserEvents.java

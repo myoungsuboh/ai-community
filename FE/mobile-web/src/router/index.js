@@ -24,7 +24,7 @@ const routes = [
   { path: '/cards/:cardSlug', name: 'card-detail', component: () => import('@/views/CardDetailView.vue') },
   { path: '/submit', name: 'submit', meta: { requiresAuth: true }, component: () => import('@/views/SubmitView.vue') },
 
-  { path: '/my-library', name: 'my-library', meta: { requiresAuth: true }, ...placeholder('내 서재', 'Phase 4') },
+  { path: '/my-library', name: 'my-library', meta: { requiresAuth: true }, component: () => import('@/views/MyLibraryView.vue') },
   { path: '/qna', name: 'qna', ...placeholder('Q&A 목록', 'Phase 5') },
 
   { path: '/projects', name: 'projects', ...placeholder('프로젝트 목록', 'Phase 6') },

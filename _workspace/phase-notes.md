@@ -41,4 +41,14 @@
   - **가드 타이밍 버그 수정**: 라우터 가드가 세션 복원(silent refresh) 완료를 await 하도록(ensureReady 메모이즈) → 새로고침 시 보호 라우트 오판 방지. mobile/admin 공통.
   - 검증: BE 단위+통합 32개 통과(auth9/curation16/content7). curl 전 파이프라인(제보→검수→발행→피드→상세, 게시글, 정책 401/403/404/400/422) 확인. 브라우저: 홈피드·카드상세·검수함이 실 데이터 렌더 + 큐레이터 인증 확인.
   - 다음: 반응/댓글(좋아요·북마크·댓글)은 Phase 4. POL-38 at-rest 암호화·POL-34 OWASP 는 Phase 8.
-- [대기] Phase 4: 사용자 활동 — 사용자 확인 후 시작. ⚠️ POST /comments/{id}/report 요청 스펙 미정 → Phase 4 STOP 에서 확인.
+- [완료] Phase 4: 사용자 활동
+  - user-activity-service: Reaction(좋아요/북마크 토글), Comment(작성/목록/신고/숨김해제), CommentReport. 이벤트 5종.
+  - ⚠️ 해소: 댓글 신고 요청 스펙 → **사용자 결정: 사유 없이 신고만** (본문 없음). 설계 이벤트 페이로드와 일치.
+  - 정책: POL-02(분당3건 429), POL-04(uq 1회), POL-07(500자), POL-15(24h 미만 계정 카운터 미반영 — AccountAgeChecker), POL-18(신고3건 자동숨김), POL-20/22/24/25(FE).
+  - soft-delete: comments.deleted_at (V2), 활성 필터. 반응 토글오프는 물리삭제(토글 성격).
+  - 공유 DB 상호작용: user-activity 가 cards 카운터 갱신(CardCounterUpdater, JdbcTemplate)·users.created_at 읽기(AccountAgeChecker). 문서화된 결정.
+  - 명세 외 추가(화면 필수): GET /cards/{id}/comments (카드 상세 댓글 목록).
+  - FE: 내 서재(무한스크롤 IntersectionObserver, POL-22/24), 카드상세 좋아요/북마크/댓글/신고 연동(POL-20/25 로그인 유도).
+  - 검증: 단위+통합 13개 통과(총 45개). curl 전체 흐름(토글·서재·403·댓글·POL-02 429·신고·숨김·비큐레이터 403). 브라우저: 내 서재 실 북마크 렌더 확인.
+  - 참고: 현재 모든 계정이 가입 24h 미만이라 POL-15 로 카드 카운터는 0 유지(정상 동작). 카운터 증가 로직은 단위테스트로 검증됨.
+- [대기] Phase 5: Q&A — 사용자 확인 후 시작.
