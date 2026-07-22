@@ -25,7 +25,7 @@ const routes = [
   { path: '/submit', name: 'submit', meta: { requiresAuth: true }, component: () => import('@/views/SubmitView.vue') },
 
   { path: '/my-library', name: 'my-library', meta: { requiresAuth: true }, component: () => import('@/views/MyLibraryView.vue') },
-  { path: '/qna', name: 'qna', ...placeholder('Q&A 목록', 'Phase 5') },
+  { path: '/qna', name: 'qna', component: () => import('@/views/QnaView.vue') },
 
   { path: '/projects', name: 'projects', ...placeholder('프로젝트 목록', 'Phase 6') },
   { path: '/projects/new', name: 'project-new', meta: { requiresAuth: true }, ...placeholder('프로젝트 생성', 'Phase 6') },

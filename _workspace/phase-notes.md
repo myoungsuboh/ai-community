@@ -51,4 +51,10 @@
   - FE: 내 서재(무한스크롤 IntersectionObserver, POL-22/24), 카드상세 좋아요/북마크/댓글/신고 연동(POL-20/25 로그인 유도).
   - 검증: 단위+통합 13개 통과(총 45개). curl 전체 흐름(토글·서재·403·댓글·POL-02 429·신고·숨김·비큐레이터 403). 브라우저: 내 서재 실 북마크 렌더 확인.
   - 참고: 현재 모든 계정이 가입 24h 미만이라 POL-15 로 카드 카운터는 0 유지(정상 동작). 카운터 증가 로직은 단위테스트로 검증됨.
-- [대기] Phase 5: Q&A — 사용자 확인 후 시작.
+- [완료] Phase 5: Q&A
+  - qna-service: Question/Answer. POST /questions, POST /questions/{id}/answers. 이벤트 2종(QuestionCreated/AnswerCreated). POL-11(@NotBlank), POL-28(FK CASCADE).
+  - 명세 외 추가(화면 필수): GET /questions(목록), GET /questions/{id}(상세+답변).
+  - FE: Q&A 목록(/qna) — 질문 등록 다이얼로그 + 아코디언 패널(펼치면 답변 조회 + 답변 작성). 실 API 연동.
+  - **공통 수정(전 서비스 영향)**: BaseTimeEntity 가 Persistable 구현 → UUID 수동할당 엔티티가 merge 대신 persist 로 저장. 생성 응답의 created_at/updated_at 이 즉시 채워지고 불필요한 SELECT 제거. 전체 재빌드+테스트로 회귀 없음 확인.
+  - 검증: 단위+통합 8개 통과(총 53). curl 질문·답변·목록·상세·POL-11 400·비인증 401. 브라우저 Q&A 목록 실데이터 렌더 + createdAt 채워짐 확인.
+- [대기] Phase 6: 프로젝트 — 사용자 확인 후 시작.

@@ -16,8 +16,8 @@
 - [x] `GET /api/v1/posts` — 게시글 검색 및 필터링 [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/web/PostController.java
 - [x] `GET /api/v1/cards/{cardSlug}` — 카드 상세 조회 [→ 콘텐츠 서비스]  ←구현위치: BE/content-service/src/main/java/com/aicommunity/content/web/CardController.java
 - [x] `GET /api/v1/cards` — 홈 피드 카드 목록 조회 및 필터링 [→ 콘텐츠 서비스]  ←구현위치: BE/content-service/src/main/java/com/aicommunity/content/web/CardController.java
-- [ ] `POST /api/v1/questions` — 질문 등록 [→ Q&A 서비스]  ←구현위치: 
-- [ ] `POST /api/v1/questions/{questionId}/answers` — 답변 등록 [→ Q&A 서비스]  ←구현위치: 
+- [x] `POST /api/v1/questions` — 질문 등록 [→ Q&A 서비스]  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/web/QuestionController.java
+- [x] `POST /api/v1/questions/{questionId}/answers` — 답변 등록 [→ Q&A 서비스]  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/web/QuestionController.java
 - [ ] `POST /api/v1/projects` — 프로젝트 생성 [→ 프로젝트 서비스]  ←구현위치: 
 - [ ] `PUT /api/v1/projects/{projectId}` — 프로젝트 수정 [→ 프로젝트 서비스]  ←구현위치: 
 - [ ] `PATCH /api/v1/projects/{projectId}/status` — 프로젝트 진행 상황 업데이트 [→ 프로젝트 서비스]  ←구현위치: 
@@ -34,13 +34,13 @@
 - [x] `POST /api/v1/auth/register` — 회원가입 [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/web/AuthController.java
 
 ## Entities (11)
-- [ ] Entity `Answer` (속성 6개)  ←구현위치: 
+- [x] Entity `Answer` (속성 6개)  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/domain/Answer.java
 - [x] Entity `AuditLog` (속성 8개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/AuditLog.java
 - [x] Entity `Card` (속성 24개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Card.java (읽기: BE/content-service/.../domain/Card.java)
 - [x] Entity `Comment` (속성 8개)  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Comment.java
 - [x] Entity `Post` (속성 7개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Post.java
 - [ ] Entity `Project` (속성 9개)  ←구현위치: 
-- [ ] Entity `Question` (속성 7개)  ←구현위치: 
+- [x] Entity `Question` (속성 7개)  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/domain/Question.java
 - [ ] Entity `RankingSnapshot` (속성 5개)  ←구현위치: 
 - [x] Entity `Reaction` (속성 5개)  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Reaction.java
 - [x] Entity `Submission` (속성 11개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Submission.java
@@ -57,7 +57,7 @@
 - [x] Policy `POL-08` — 반려 시 반려 사유는 필수 입력되어야 한다.  ←구현위치: BE/curation-service/.../service/SubmissionService.java (REJECTION_REASON_REQUIRED)
 - [x] Policy `POL-09` — 발행 시 4축 합계와 총점이 일치하지 않으면 발행을 거부해야 한다.  ←구현위치: BE/curation-service/.../domain/Card.java (총점=4축 합 강제)
 - [x] Policy `POL-10` — 발행 카드 수정 시 실전점수 변경 사유는 필수 입력되어야 한다.  ←구현위치: BE/curation-service/.../service/CardService.java (SCORE_REASON_REQUIRED)
-- [ ] Policy `POL-11` — 질문 또는 답변 내용은 비어있을 수 없다.  ←구현위치: 
+- [x] Policy `POL-11` — 질문 또는 답변 내용은 비어있을 수 없다.  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/dto/QnaDtos.java (@NotBlank)
 - [ ] Policy `POL-12` — 프로젝트명은 2자 미만이거나 이미 존재하는 프로젝트명일 수 없다.  ←구현위치: 
 - [x] Policy `POL-13` — 홈 피드 필터의 검색어는 1~50자 이내, 최소점수는 0~100 정수여야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (minScore 0~100) + curation PostService.search (검색어 ≤50)
 - [x] Policy `POL-14` — 홈 피드 필터의 정렬 값은 '점수순', '최신순', '스타순' 중 하나여야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (SORTS 화이트리스트)
@@ -74,7 +74,7 @@
 - [x] Policy `POL-25` — 비로그인 상태에서 댓글 작성 시도 시 로그인 안내로 연결되어야 한다.  ←구현위치: FE/mobile-web/src/views/CardDetailView.vue (submitComment→requireLogin)
 - [ ] Policy `POL-26` — 원본 저장소가 삭제되거나 비공개로 변경되어 자동 갱신이 실패할 경우, 카드에 '원본 접근 불가' 뱃지를 표시하고 점수 갱신을 중단해야 한다.  ←구현위치: 
 - [x] Policy `POL-27` — 존재하지 않는 카드 슬러그 요청 시 404 Not Found 오류를 반환해야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (CARD_NOT_FOUND 404)
-- [ ] Policy `POL-28` — 질문 삭제 시, 해당 질문에 달린 모든 답변도 함께 삭제되어야 한다.  ←구현위치: 
+- [x] Policy `POL-28` — 질문 삭제 시, 해당 질문에 달린 모든 답변도 함께 삭제되어야 한다.  ←구현위치: V1 answers FK ON DELETE CASCADE (구조적 강제)
 - [ ] Policy `POL-29` — 프로젝트 삭제 시, 해당 프로젝트와 관련된 모든 데이터(게시글, 파일 등)는 아카이빙되거나 삭제되어야 한다.  ←구현위치: 
 - [ ] Policy `POL-34` — OWASP Top 10 취약점에 대한 방어 체계를 갖춰야 한다.  ←구현위치: 
 - [x] Policy `POL-35` — 검색어에 특수문자가 포함될 경우, SQL Injection 등의 공격을 방지하기 위해 안전하게 처리해야 한다.  ←구현위치: JPA 파라미터 바인딩(@Query :param) — 문자열 연결 없음
@@ -108,14 +108,14 @@
 - [ ] Screen `프로젝트 생성` (`/projects/new`) (→ API: API-07)  ←구현위치: 
 - [ ] Screen `프로젝트 상세` (`/projects/{projectId}`) (→ API: API-09, API-08)  ←구현위치: 
 - [x] Screen `홈 피드` (`/home`) (→ API: API-01, API-13)  ←구현위치: FE/mobile-web/src/views/HomeView.vue (반응은 Phase 4)
-- [ ] Screen `Q&A 목록` (`/qna`) (→ API: API-05)  ←구현위치: 
+- [x] Screen `Q&A 목록` (`/qna`) (→ API: API-05)  ←구현위치: FE/mobile-web/src/views/QnaView.vue (+ QnaQuestionPanel)
 
 ## Aggregates (정합성 경계) (9)
 - [x] Aggregate `Post` (불변식 3개) [→ 콘텐츠 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Post.java
 - [x] Aggregate `Card` (불변식 3개) [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Card.java
 - [x] Aggregate `Submission` (불변식 3개) [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Submission.java
 - [ ] Aggregate `Project` (불변식 3개) [→ 프로젝트 서비스]  ←구현위치: 
-- [ ] Aggregate `Question` (불변식 1개) [→ Q&A 서비스]  ←구현위치: 
+- [x] Aggregate `Question` (불변식 1개) [→ Q&A 서비스]  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/domain/Question.java
 - [ ] Aggregate `RankingSnapshot` (불변식 4개) [→ 랭킹 배치 워커]  ←구현위치: 
 - [x] Aggregate `Comment` (불변식 4개) [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Comment.java
 - [x] Aggregate `Reaction` (불변식 2개) [→ 사용자 활동 서비스]  ←구현위치: BE/user-activity-service/src/main/java/com/aicommunity/useractivity/domain/Reaction.java
@@ -123,12 +123,12 @@
 
 ## Domain Entities (데이터 모델) (2)
 - [x] Domain Entity `AuditLog` (속성 7개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/AuditLog.java
-- [ ] Domain Entity `Answer` (속성 5개)  ←구현위치: 
+- [x] Domain Entity `Answer` (속성 5개)  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/domain/Answer.java
 
 ## Domain Events (18)
 - [x] Domain Event `PostCreated`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
-- [ ] Domain Event `AnswerCreated`  ←구현위치: 
-- [ ] Domain Event `QuestionCreated`  ←구현위치: 
+- [x] Domain Event `AnswerCreated`  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/domain/event/QnaEvents.java
+- [x] Domain Event `QuestionCreated`  ←구현위치: BE/qna-service/src/main/java/com/aicommunity/qna/domain/event/QnaEvents.java
 - [ ] Domain Event `ProjectCreated`  ←구현위치: 
 - [ ] Domain Event `ProjectUpdated`  ←구현위치: 
 - [x] Domain Event `SubmissionReceived`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
