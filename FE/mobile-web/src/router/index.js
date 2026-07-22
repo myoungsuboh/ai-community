@@ -27,9 +27,9 @@ const routes = [
   { path: '/my-library', name: 'my-library', meta: { requiresAuth: true }, component: () => import('@/views/MyLibraryView.vue') },
   { path: '/qna', name: 'qna', component: () => import('@/views/QnaView.vue') },
 
-  { path: '/projects', name: 'projects', ...placeholder('프로젝트 목록', 'Phase 6') },
-  { path: '/projects/new', name: 'project-new', meta: { requiresAuth: true }, ...placeholder('프로젝트 생성', 'Phase 6') },
-  { path: '/projects/:projectId', name: 'project-detail', ...placeholder('프로젝트 상세', 'Phase 6') },
+  { path: '/projects', name: 'projects', component: () => import('@/views/ProjectsView.vue') },
+  { path: '/projects/new', name: 'project-new', meta: { requiresAuth: true }, component: () => import('@/views/ProjectCreateView.vue') },
+  { path: '/projects/:projectId', name: 'project-detail', component: () => import('@/views/ProjectDetailView.vue') },
 
   { path: '/rankings/weekly', name: 'rankings', ...placeholder('주간 랭킹', 'Phase 7') },
   { path: '/users/:userId', name: 'user-profile', ...placeholder('사용자 프로필', 'Phase 3+') },

@@ -57,4 +57,10 @@
   - FE: Q&A 목록(/qna) — 질문 등록 다이얼로그 + 아코디언 패널(펼치면 답변 조회 + 답변 작성). 실 API 연동.
   - **공통 수정(전 서비스 영향)**: BaseTimeEntity 가 Persistable 구현 → UUID 수동할당 엔티티가 merge 대신 persist 로 저장. 생성 응답의 created_at/updated_at 이 즉시 채워지고 불필요한 SELECT 제거. 전체 재빌드+테스트로 회귀 없음 확인.
   - 검증: 단위+통합 8개 통과(총 53). curl 질문·답변·목록·상세·POL-11 400·비인증 401. 브라우저 Q&A 목록 실데이터 렌더 + createdAt 채워짐 확인.
-- [대기] Phase 6: 프로젝트 — 사용자 확인 후 시작.
+- [완료] Phase 6: 프로젝트
+  - project-service: Project. POST /projects, PUT /projects/{id}, PATCH /projects/{id}/status. 이벤트 2종. POL-12(이름 2자↑ @Size + 중복 409). owner 만 수정/진행상황(FORBIDDEN).
+  - 명세 외 추가(화면 필수): GET /projects(목록), GET /projects/{id}(상세).
+  - FE: 프로젝트 목록/생성/상세(/projects, /new, /:id). 상세에서 owner 는 상태·진행메모 업데이트.
+  - 검증: 단위+통합 10개 통과(총 63). curl 전 흐름(생성·owner상태변경·비owner 403·중복 409·짧은이름 400·비인증 401·상세·목록). 브라우저 프로젝트 목록 실데이터 렌더.
+  - POL-29(프로젝트 삭제 시 관련 데이터 처리)는 삭제 API 가 명세에 없어 트리거 불가 → 미해당(최종 감사에서 확인).
+- [대기] Phase 7: 랭킹 — 사용자 확인 후 시작.
