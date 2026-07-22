@@ -15,6 +15,9 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
+    // HTML sanitize (POL-36: 게시글 허용되지 않는 태그 제거) — skills/security/sanitize-*
+    api 'org.jsoup:jsoup:1.18.1'
+
     // DB migration
     api 'org.flywaydb:flyway-core'
     runtimeOnly 'org.flywaydb:flyway-database-postgresql'

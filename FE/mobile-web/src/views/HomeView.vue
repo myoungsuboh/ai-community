@@ -1,121 +1,103 @@
 <script setup>
+import { reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuery } from '@tanstack/vue-query'
+import { cardsApi } from '@/api/cards'
+import CardTile from '@/components/CardTile.vue'
 
 const router = useRouter()
 
-// 랜딩 히어로 + 플랫폼 소개. 실제 카드 피드는 Phase 3 에서 이 아래에 연동된다.
-const pillars = [
-  {
-    icon: 'mdi-cards-outline',
-    title: '큐레이션 카드',
-    body: 'AI 레포·스킬을 4축 실전점수로 평가한 카드로 한눈에.',
-    to: '/dashboard',
-  },
-  {
-    icon: 'mdi-comment-question-outline',
-    title: 'Q&A',
-    body: '막히는 지점을 묻고, 아는 것을 나눕니다.',
-    to: '/qna',
-  },
-  {
-    icon: 'mdi-account-group-outline',
-    title: '프로젝트 협업',
-    body: '아이디어를 팀으로 만들어 결과물로.',
-    to: '/projects',
-  },
-  {
-    icon: 'mdi-trophy-outline',
-    title: '주간 랭킹',
-    body: '이번 주 가장 주목받은 AI를 매주 월요일에.',
-    to: '/rankings/weekly',
-  },
+const categories = ['전체', 'Agent', 'LLM', 'RAG', 'Vision', 'Tooling', 'MLOps']
+const sorts = [
+  { label: '점수순', value: 'score' },
+  { label: '최신순', value: 'recent' },
+  { label: '스타순', value: 'stars' },
 ]
 
-const stats = [
-  { value: '4축', label: '실전점수 평가' },
-  { value: '매주', label: '갱신되는 랭킹' },
-  { value: '함께', label: '만드는 큐레이션' },
-]
+const filters = reactive({ category: '전체', minScore: 0, sort: 'score' })
+
+const queryKey = computed(() => ['cards', filters.category, filters.minScore, filters.sort])
+
+const { data, isLoading, isError, refetch } = useQuery({
+  queryKey,
+  queryFn: () =>
+    cardsApi.list({
+      category: filters.category === '전체' ? undefined : filters.category,
+      minScore: filters.minScore || undefined,
+      sort: filters.sort,
+      page: 0,
+      size: 12,
+    }),
+})
+
+const cards = computed(() => data.value?.content ?? [])
 </script>
 
 <template>
   <div>
-    <!-- HERO -->
+    <!-- 컴팩트 히어로 -->
     <section class="hero-glow">
-      <v-container class="container-max section pb-0">
-        <v-row>
-          <v-col cols="12" md="10" lg="9">
-            <p class="eyebrow text-primary mb-4">AI 지식 공유 커뮤니티</p>
-            <h1 class="display-hero text-balance mb-6">
-              지금의 AI를<br />
-              <span class="text-primary">한눈에</span>, 함께.
-            </h1>
-            <p class="lead text-medium-emphasis text-balance mb-8" style="max-width: 42rem">
-              쏟아지는 AI 레포와 스킬을 커뮤니티가 직접 큐레이션합니다.
-              실전점수로 고르고, 질문으로 배우고, 프로젝트로 만듭니다.
-            </p>
-            <div class="d-flex flex-wrap ga-3">
-              <v-btn size="x-large" color="primary" variant="flat" @click="router.push('/dashboard')">
-                카드 둘러보기
-                <v-icon end>mdi-arrow-right</v-icon>
-              </v-btn>
-              <v-btn size="x-large" variant="outlined" @click="router.push('/login')">
-                시작하기
-              </v-btn>
-            </div>
-          </v-col>
-        </v-row>
-
-        <v-row class="mt-12">
-          <v-col v-for="s in stats" :key="s.label" cols="4" md="3">
-            <div class="display-lg text-primary">{{ s.value }}</div>
-            <div class="text-body-2 text-medium-emphasis mt-1">{{ s.label }}</div>
-          </v-col>
-        </v-row>
+      <v-container class="container-max pt-12 pb-6">
+        <p class="eyebrow text-primary mb-3">AI 지식 공유 커뮤니티</p>
+        <h1 class="display-xl text-balance mb-4">지금의 AI를 한눈에, 함께.</h1>
+        <p class="lead text-medium-emphasis mb-2" style="max-width: 40rem">
+          커뮤니티가 큐레이션한 AI 레포·스킬을 실전점수로 살펴보세요.
+        </p>
       </v-container>
     </section>
 
-    <!-- PILLARS -->
-    <section>
-      <v-container class="container-max section">
-        <v-row>
-          <v-col cols="12" md="6">
-            <h2 class="display-xl text-balance mb-4">
-              흩어진 정보를,<br />쓸모 있는 지식으로.
-            </h2>
-          </v-col>
-          <v-col cols="12" md="6" class="d-flex align-end">
-            <p class="lead text-medium-emphasis">
-              네 가지 방식으로 커뮤니티에 참여하세요. 읽고, 반응하고, 묻고, 만듭니다.
-            </p>
-          </v-col>
-        </v-row>
+    <!-- 필터 바 -->
+    <v-container class="container-max py-4">
+      <div class="d-flex flex-wrap align-center ga-2 mb-2">
+        <v-chip
+          v-for="c in categories" :key="c"
+          :color="filters.category === c ? 'primary' : undefined"
+          :variant="filters.category === c ? 'flat' : 'tonal'"
+          @click="filters.category = c"
+        >
+          {{ c }}
+        </v-chip>
+      </div>
+      <div class="d-flex flex-wrap align-center ga-4">
+        <v-btn-toggle v-model="filters.sort" density="comfortable" variant="outlined" divided mandatory>
+          <v-btn v-for="s in sorts" :key="s.value" :value="s.value" size="small">{{ s.label }}</v-btn>
+        </v-btn-toggle>
+        <div class="d-flex align-center ga-2" style="min-width: 220px">
+          <span class="text-body-2 text-medium-emphasis">최소점수 {{ filters.minScore }}</span>
+          <v-slider v-model="filters.minScore" :min="0" :max="100" :step="10" hide-details density="compact" />
+        </div>
+      </div>
+    </v-container>
 
-        <v-row class="mt-6">
-          <v-col v-for="p in pillars" :key="p.title" cols="12" sm="6" lg="3">
-            <v-card class="pa-6 h-100 card-hover" @click="router.push(p.to)">
-              <v-icon :icon="p.icon" size="34" color="primary" class="mb-4" />
-              <h3 class="display-md mb-2">{{ p.title }}</h3>
-              <p class="text-body-2 text-medium-emphasis">{{ p.body }}</p>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </section>
+    <!-- 카드 그리드 -->
+    <v-container class="container-max pb-16">
+      <!-- 로딩 -->
+      <v-row v-if="isLoading">
+        <v-col v-for="n in 6" :key="n" cols="12" sm="6" lg="4">
+          <v-skeleton-loader type="card" />
+        </v-col>
+      </v-row>
 
-    <!-- CTA -->
-    <section>
-      <v-container class="container-max section pt-0">
-        <v-card class="pa-8 pa-md-12 text-center" color="surface-variant">
-          <h2 class="display-xl text-balance mb-4">오늘의 AI, 함께 골라볼까요?</h2>
-          <p class="lead text-medium-emphasis mb-8">
-            무료로 시작하고, 관심 있는 카드에 좋아요·북마크를 남겨보세요.
-          </p>
-          <v-btn size="x-large" color="primary" variant="flat" @click="router.push('/login')">
-            회원가입 / 로그인
-          </v-btn>
-        </v-card>
-      </v-container>
-    </section>
+      <!-- 에러 -->
+      <v-alert v-else-if="isError" type="error" variant="tonal" class="my-8">
+        카드를 불러오지 못했어요.
+        <template #append><v-btn size="small" variant="text" @click="refetch()">다시 시도</v-btn></template>
+      </v-alert>
+
+      <!-- 빈 상태 (POL-16) -->
+      <div v-else-if="cards.length === 0" class="text-center py-16">
+        <v-icon icon="mdi-card-search-outline" size="48" class="text-medium-emphasis mb-4" />
+        <p class="display-md mb-2">검색 결과가 없습니다.</p>
+        <p class="text-medium-emphasis">필터를 바꾸거나 새로운 AI를 제보해 보세요.</p>
+        <v-btn class="mt-4" color="primary" variant="flat" @click="router.push('/submit')">제보하기</v-btn>
+      </div>
+
+      <!-- 결과 -->
+      <v-row v-else>
+        <v-col v-for="card in cards" :key="card.cardId" cols="12" sm="6" lg="4">
+          <CardTile :card="card" />
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>

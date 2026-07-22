@@ -30,4 +30,15 @@
   - 검증: auth 단위+통합 테스트 9개 통과. 브라우저 로그인 플로우 실동작 확인(login 200, /home 리다이렉트, 닉네임 표시, HttpOnly 쿠키 JS 비노출, CORS preflight 200).
   - 미결/다음 phase: admin-web 인증연동은 Phase 3(검수함)에서. POL-38(전체 데이터 at-rest 암호화)은 인프라/Phase 8. RefreshTokenStore Redis 구현은 Phase 8.
   - 테스트 계정: uiuser@ai.community / uipass1234 (MEMBER). (member1@ai.community/testpass123 는 잠금테스트로 일시 잠김→10분 후 해제)
-- [대기] Phase 3: 큐레이션 & 콘텐츠 — 사용자 확인 후 시작
+- [완료] Phase 3: 큐레이션 & 콘텐츠
+  - curation-service: Post/Submission/Card(쓰기)/AuditLog. API: POST/GET /posts, GET /posts/{id}(추가), POST /submissions, GET /submissions?status(추가·검수함 읽기측), PATCH /submissions/{id}/review, PATCH /cards/{id}. 정책 POL-01/03/05/06/08/09/10/13/35/36.
+  - content-service: Card(읽기). API: GET /cards(필터 category/minScore/sort + 페이지네이션), GET /cards/{slug}. 정책 POL-13/14/16/27.
+  - 서비스 간 공유: cards 테이블을 curation(쓰기)·content(읽기)가 공유. 이벤트 5종 발행.
+  - 서비스 매핑은 3_architecture.md §5 를 그대로 따름(스펙상 posts→curation, cards→content 로 라벨이 교차돼 보이지만 권위 문서 기준).
+  - **명세에 없어 추가한 읽기 엔드포인트 2개**: GET /submissions(검수함 목록), GET /posts/{id}(게시글 상세). 지정된 화면 구현에 필수 → STOP 보고에 명시.
+  - FE mobile: 홈피드(카드그리드+필터, 실전점수 도넛), 카드상세(4축), 게시글 목록/상세/작성, 제보. TanStack Vue Query(로딩/에러/빈상태/무효화).
+  - FE admin: 큐레이터 로그인(역할 검증) + 검수함(목록 + 발행/반려 다이얼로그). 쿠키 인증 동기화.
+  - **가드 타이밍 버그 수정**: 라우터 가드가 세션 복원(silent refresh) 완료를 await 하도록(ensureReady 메모이즈) → 새로고침 시 보호 라우트 오판 방지. mobile/admin 공통.
+  - 검증: BE 단위+통합 32개 통과(auth9/curation16/content7). curl 전 파이프라인(제보→검수→발행→피드→상세, 게시글, 정책 401/403/404/400/422) 확인. 브라우저: 홈피드·카드상세·검수함이 실 데이터 렌더 + 큐레이터 인증 확인.
+  - 다음: 반응/댓글(좋아요·북마크·댓글)은 Phase 4. POL-38 at-rest 암호화·POL-34 OWASP 는 Phase 8.
+- [대기] Phase 4: 사용자 활동 — 사용자 확인 후 시작. ⚠️ POST /comments/{id}/report 요청 스펙 미정 → Phase 4 STOP 에서 확인.

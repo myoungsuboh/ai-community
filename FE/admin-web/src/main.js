@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { VueQueryPlugin } from '@tanstack/vue-query'
 
 import App from './App.vue'
 import router from './router'
@@ -21,8 +22,13 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
+app.use(VueQueryPlugin, {
+  queryClientConfig: {
+    defaultOptions: { queries: { retry: 1, staleTime: 30_000, refetchOnWindowFocus: false } },
+  },
+})
 
-// 저장된 세션(토큰) 복원 후 마운트
-useAuthStore().restore()
+// HttpOnly 쿠키 기반 silent refresh 로 세션 복원 후 마운트
+await useAuthStore().ensureReady()
 
 app.mount('#app')

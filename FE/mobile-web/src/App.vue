@@ -24,8 +24,8 @@ function toggleTheme() {
 
 const navLinks = [
   { title: '홈', to: '/home' },
-  { title: '카드', to: '/dashboard' },
   { title: '게시글', to: '/posts' },
+  { title: '제보', to: '/submit' },
   { title: 'Q&A', to: '/qna' },
   { title: '프로젝트', to: '/projects' },
   { title: '랭킹', to: '/rankings/weekly' },

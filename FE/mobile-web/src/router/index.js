@@ -17,12 +17,12 @@ const routes = [
   { path: '/dashboard', name: 'dashboard', ...placeholder('메인 대시보드', 'Phase 3+') },
   { path: '/models', name: 'models', ...placeholder('AI 모델/코드 공유', 'Phase 3') },
 
-  { path: '/posts', name: 'posts', ...placeholder('게시글 목록', 'Phase 3') },
-  { path: '/posts/new', name: 'post-new', meta: { requiresAuth: true }, ...placeholder('게시글 작성', 'Phase 3') },
-  { path: '/posts/:postId', name: 'post-detail', ...placeholder('게시글 상세', 'Phase 3') },
+  { path: '/posts', name: 'posts', component: () => import('@/views/PostsView.vue') },
+  { path: '/posts/new', name: 'post-new', meta: { requiresAuth: true }, component: () => import('@/views/PostCreateView.vue') },
+  { path: '/posts/:postId', name: 'post-detail', component: () => import('@/views/PostDetailView.vue') },
 
-  { path: '/cards/:cardSlug', name: 'card-detail', ...placeholder('카드 상세', 'Phase 3') },
-  { path: '/submit', name: 'submit', meta: { requiresAuth: true }, ...placeholder('제보하기', 'Phase 3') },
+  { path: '/cards/:cardSlug', name: 'card-detail', component: () => import('@/views/CardDetailView.vue') },
+  { path: '/submit', name: 'submit', meta: { requiresAuth: true }, component: () => import('@/views/SubmitView.vue') },
 
   { path: '/my-library', name: 'my-library', meta: { requiresAuth: true }, ...placeholder('내 서재', 'Phase 4') },
   { path: '/qna', name: 'qna', ...placeholder('Q&A 목록', 'Phase 5') },
@@ -44,8 +44,10 @@ const router = createRouter({
 })
 
 // 인증 가드 (skills/frontEnd/routing-routing-auth.md)
-router.beforeEach((to) => {
+// 판단 전에 세션 복원(silent refresh)이 끝나도록 보장한다 — 새로고침 시 오판 방지.
+router.beforeEach(async (to) => {
   const auth = useAuthStore()
+  await auth.ensureReady()
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }

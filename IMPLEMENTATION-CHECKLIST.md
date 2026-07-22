@@ -12,18 +12,18 @@
 > **추측으로 채우지 마세요** — 해당 Phase 의 STOP 보고에서 사용자에게 확인을 받은 뒤 구현하세요.
 
 ## APIs (20)
-- [ ] `POST /api/v1/posts` — 게시글 작성 [→ 큐레이션 서비스]  ←구현위치: 
-- [ ] `GET /api/v1/posts` — 게시글 검색 및 필터링 [→ 큐레이션 서비스]  ←구현위치: 
-- [ ] `GET /api/v1/cards/{cardSlug}` — 카드 상세 조회 [→ 콘텐츠 서비스]  ←구현위치: 
-- [ ] `GET /api/v1/cards` — 홈 피드 카드 목록 조회 및 필터링 [→ 콘텐츠 서비스]  ←구현위치: 
+- [x] `POST /api/v1/posts` — 게시글 작성 [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/web/PostController.java
+- [x] `GET /api/v1/posts` — 게시글 검색 및 필터링 [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/web/PostController.java
+- [x] `GET /api/v1/cards/{cardSlug}` — 카드 상세 조회 [→ 콘텐츠 서비스]  ←구현위치: BE/content-service/src/main/java/com/aicommunity/content/web/CardController.java
+- [x] `GET /api/v1/cards` — 홈 피드 카드 목록 조회 및 필터링 [→ 콘텐츠 서비스]  ←구현위치: BE/content-service/src/main/java/com/aicommunity/content/web/CardController.java
 - [ ] `POST /api/v1/questions` — 질문 등록 [→ Q&A 서비스]  ←구현위치: 
 - [ ] `POST /api/v1/questions/{questionId}/answers` — 답변 등록 [→ Q&A 서비스]  ←구현위치: 
 - [ ] `POST /api/v1/projects` — 프로젝트 생성 [→ 프로젝트 서비스]  ←구현위치: 
 - [ ] `PUT /api/v1/projects/{projectId}` — 프로젝트 수정 [→ 프로젝트 서비스]  ←구현위치: 
 - [ ] `PATCH /api/v1/projects/{projectId}/status` — 프로젝트 진행 상황 업데이트 [→ 프로젝트 서비스]  ←구현위치: 
-- [ ] `POST /api/v1/submissions` — URL 제보 [→ 큐레이션 서비스]  ←구현위치: 
-- [ ] `PATCH /api/v1/submissions/{submissionId}/review` — 제보 검수 및 발행/반려 [→ 큐레이션 서비스]  ←구현위치: 
-- [ ] `PATCH /api/v1/cards/{cardId}` — 발행 카드 수정 [→ 큐레이션 서비스]  ←구현위치: 
+- [x] `POST /api/v1/submissions` — URL 제보 [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/web/SubmissionController.java
+- [x] `PATCH /api/v1/submissions/{submissionId}/review` — 제보 검수 및 발행/반려 [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/web/SubmissionController.java
+- [x] `PATCH /api/v1/cards/{cardId}` — 발행 카드 수정 [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/web/CardController.java
 - [ ] `POST /api/v1/cards/{cardId}/reactions` — 좋아요 및 북마크 토글 [→ 사용자 활동 서비스]  ←구현위치: 
 - [ ] `GET /api/v1/users/{userId}/bookmarks` — 내 서재 조회 [→ 사용자 활동 서비스]  ←구현위치: 
 - [ ] `POST /api/v1/cards/{cardId}/comments` — 댓글 작성 [→ 사용자 활동 서비스]  ←구현위치: 
@@ -35,34 +35,34 @@
 
 ## Entities (11)
 - [ ] Entity `Answer` (속성 6개)  ←구현위치: 
-- [ ] Entity `AuditLog` (속성 8개)  ←구현위치: 
-- [ ] Entity `Card` (속성 24개)  ←구현위치: 
+- [x] Entity `AuditLog` (속성 8개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/AuditLog.java
+- [x] Entity `Card` (속성 24개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Card.java (읽기: BE/content-service/.../domain/Card.java)
 - [ ] Entity `Comment` (속성 8개)  ←구현위치: 
-- [ ] Entity `Post` (속성 7개)  ←구현위치: 
+- [x] Entity `Post` (속성 7개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Post.java
 - [ ] Entity `Project` (속성 9개)  ←구현위치: 
 - [ ] Entity `Question` (속성 7개)  ←구현위치: 
 - [ ] Entity `RankingSnapshot` (속성 5개)  ←구현위치: 
 - [ ] Entity `Reaction` (속성 5개)  ←구현위치: 
-- [ ] Entity `Submission` (속성 11개)  ←구현위치: 
+- [x] Entity `Submission` (속성 11개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Submission.java
 - [x] Entity `User` (속성 10개)  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/User.java
 
 ## Policies (비즈니스 규칙) (36)
-- [ ] Policy `POL-01` — 모든 발행 카드 수정 이력은 카드에 기록되어야 한다.  ←구현위치: 
+- [x] Policy `POL-01` — 모든 발행 카드 수정 이력은 카드에 기록되어야 한다.  ←구현위치: BE/curation-service/.../service/CardService.java + SubmissionService.java (AuditLog)
 - [ ] Policy `POL-02` — 댓글 작성은 사용자당 분당 3건으로 제한되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-03` — 제보는 계정당 하루 5건으로 제한되어야 한다.  ←구현위치: 
+- [x] Policy `POL-03` — 제보는 계정당 하루 5건으로 제한되어야 한다.  ←구현위치: BE/curation-service/.../service/SubmissionService.java (DAILY_LIMIT=5 → SUBMISSION_LIMIT_EXCEEDED)
 - [ ] Policy `POL-04` — 좋아요 및 북마크는 계정당 카드당 1회만 가능하도록 저장 구조에서 강제되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-05` — URL 제보 시 잘못된 URL 형식은 422 Unprocessable Entity 오류로 거부되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-06` — 게시글 제목은 5자 미만, 내용은 10자 미만일 수 없다.  ←구현위치: 
+- [x] Policy `POL-05` — URL 제보 시 잘못된 URL 형식은 422 Unprocessable Entity 오류로 거부되어야 한다.  ←구현위치: BE/curation-service/.../service/SubmissionService.java (validateUrl → INVALID_URL 422)
+- [x] Policy `POL-06` — 게시글 제목은 5자 미만, 내용은 10자 미만일 수 없다.  ←구현위치: BE/curation-service/.../dto/PostDtos.java (@Size)
 - [ ] Policy `POL-07` — 댓글 내용은 최대 500자여야 한다.  ←구현위치: 
-- [ ] Policy `POL-08` — 반려 시 반려 사유는 필수 입력되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-09` — 발행 시 4축 합계와 총점이 일치하지 않으면 발행을 거부해야 한다.  ←구현위치: 
-- [ ] Policy `POL-10` — 발행 카드 수정 시 실전점수 변경 사유는 필수 입력되어야 한다.  ←구현위치: 
+- [x] Policy `POL-08` — 반려 시 반려 사유는 필수 입력되어야 한다.  ←구현위치: BE/curation-service/.../service/SubmissionService.java (REJECTION_REASON_REQUIRED)
+- [x] Policy `POL-09` — 발행 시 4축 합계와 총점이 일치하지 않으면 발행을 거부해야 한다.  ←구현위치: BE/curation-service/.../domain/Card.java (총점=4축 합 강제)
+- [x] Policy `POL-10` — 발행 카드 수정 시 실전점수 변경 사유는 필수 입력되어야 한다.  ←구현위치: BE/curation-service/.../service/CardService.java (SCORE_REASON_REQUIRED)
 - [ ] Policy `POL-11` — 질문 또는 답변 내용은 비어있을 수 없다.  ←구현위치: 
 - [ ] Policy `POL-12` — 프로젝트명은 2자 미만이거나 이미 존재하는 프로젝트명일 수 없다.  ←구현위치: 
-- [ ] Policy `POL-13` — 홈 피드 필터의 검색어는 1~50자 이내, 최소점수는 0~100 정수여야 한다.  ←구현위치: 
-- [ ] Policy `POL-14` — 홈 피드 필터의 정렬 값은 '점수순', '최신순', '스타순' 중 하나여야 한다.  ←구현위치: 
+- [x] Policy `POL-13` — 홈 피드 필터의 검색어는 1~50자 이내, 최소점수는 0~100 정수여야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (minScore 0~100) + curation PostService.search (검색어 ≤50)
+- [x] Policy `POL-14` — 홈 피드 필터의 정렬 값은 '점수순', '최신순', '스타순' 중 하나여야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (SORTS 화이트리스트)
 - [ ] Policy `POL-15` — 가입 후 24시간이 지나지 않은 계정의 좋아요, 북마크, 댓글은 커뮤니티 점수 계산에서 제외되어야 한다.  ←구현위치: 
-- [ ] Policy `POL-16` — 검색 결과가 없을 경우 빈 목록과 함께 '검색 결과가 없습니다.' 메시지를 표시해야 한다.  ←구현위치: 
+- [x] Policy `POL-16` — 검색 결과가 없을 경우 빈 목록과 함께 '검색 결과가 없습니다.' 메시지를 표시해야 한다.  ←구현위치: FE/mobile-web/src/views/HomeView.vue + PostsView.vue (빈 상태)
 - [ ] Policy `POL-17` — 네트워크 지연으로 인한 발행 실패 시, 사용자에게 재시도 옵션을 제공해야 한다.  ←구현위치: 
 - [ ] Policy `POL-18` — 댓글 신고가 3건 쌓이면 시스템은 자동으로 댓글을 가리고 큐레이터 판단을 기다려야 한다.  ←구현위치: 
 - [ ] Policy `POL-19` — 동점일 경우 북마크 수가 많은 카드가 상위로 배치되어야 한다.  ←구현위치: 
@@ -73,12 +73,12 @@
 - [ ] Policy `POL-24` — 북마크한 카드가 없을 경우, '아직 저장한 카드가 없어요. 피드에서 북마크를 눌러보세요' 메시지와 피드로 가는 버튼을 표시해야 한다.  ←구현위치: 
 - [ ] Policy `POL-25` — 비로그인 상태에서 댓글 작성 시도 시 로그인 안내로 연결되어야 한다.  ←구현위치: 
 - [ ] Policy `POL-26` — 원본 저장소가 삭제되거나 비공개로 변경되어 자동 갱신이 실패할 경우, 카드에 '원본 접근 불가' 뱃지를 표시하고 점수 갱신을 중단해야 한다.  ←구현위치: 
-- [ ] Policy `POL-27` — 존재하지 않는 카드 슬러그 요청 시 404 Not Found 오류를 반환해야 한다.  ←구현위치: 
+- [x] Policy `POL-27` — 존재하지 않는 카드 슬러그 요청 시 404 Not Found 오류를 반환해야 한다.  ←구현위치: BE/content-service/.../service/CardQueryService.java (CARD_NOT_FOUND 404)
 - [ ] Policy `POL-28` — 질문 삭제 시, 해당 질문에 달린 모든 답변도 함께 삭제되어야 한다.  ←구현위치: 
 - [ ] Policy `POL-29` — 프로젝트 삭제 시, 해당 프로젝트와 관련된 모든 데이터(게시글, 파일 등)는 아카이빙되거나 삭제되어야 한다.  ←구현위치: 
 - [ ] Policy `POL-34` — OWASP Top 10 취약점에 대한 방어 체계를 갖춰야 한다.  ←구현위치: 
-- [ ] Policy `POL-35` — 검색어에 특수문자가 포함될 경우, SQL Injection 등의 공격을 방지하기 위해 안전하게 처리해야 한다.  ←구현위치: 
-- [ ] Policy `POL-36` — 게시글 작성 시 허용되지 않는 HTML 태그는 자동으로 제거하거나 이스케이프 처리해야 한다.  ←구현위치: 
+- [x] Policy `POL-35` — 검색어에 특수문자가 포함될 경우, SQL Injection 등의 공격을 방지하기 위해 안전하게 처리해야 한다.  ←구현위치: JPA 파라미터 바인딩(@Query :param) — 문자열 연결 없음
+- [x] Policy `POL-36` — 게시글 작성 시 허용되지 않는 HTML 태그는 자동으로 제거하거나 이스케이프 처리해야 한다.  ←구현위치: BE/common/.../support/HtmlSanitizer.java (jsoup) + PostService
 - [x] Policy `POL-37` — 로그인 5회 연속 실패 시 10분간 계정이 잠금 처리되어야 한다.  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/service/AuthService.java (MAX_LOGIN_ATTEMPTS=5, LOCK_DURATION=10m) + domain/User.registerFailedLogin
 - [ ] Policy `POL-38` — 모든 사용자 데이터는 암호화되어 저장되어야 한다.  ←구현위치: 
 - [x] Policy `POL-39` — 비밀번호는 최소 8자 이상이어야 한다.  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/dto/AuthDtos.java (RegisterRequest @Size min=8)
@@ -93,27 +93,27 @@
 
 ## Screens (화면) (17)
 - [ ] Screen `AI 모델/코드 공유` (`/models`) (→ API: API-04)  ←구현위치: 
-- [ ] Screen `게시글 목록` (`/posts`) (→ API: API-03, API-04)  ←구현위치: 
-- [ ] Screen `게시글 상세` (`/posts/{postId}`) (→ API: API-16, API-14, API-15, API-04)  ←구현위치: 
-- [ ] Screen `게시글 작성/편집` (`/posts/new`) (→ API: API-03)  ←구현위치: 
+- [x] Screen `게시글 목록` (`/posts`) (→ API: API-03, API-04)  ←구현위치: FE/mobile-web/src/views/PostsView.vue
+- [x] Screen `게시글 상세` (`/posts/{postId}`) (→ API: API-16, API-14, API-15, API-04)  ←구현위치: FE/mobile-web/src/views/PostDetailView.vue (댓글/반응은 Phase 4)
+- [x] Screen `게시글 작성/편집` (`/posts/new`) (→ API: API-03)  ←구현위치: FE/mobile-web/src/views/PostCreateView.vue
 - [ ] Screen `내 서재` (`/my-library`) (→ API: API-17)  ←구현위치: 
 - [x] Screen `로그인/회원가입` (`/login`) (→ API: API-19, API-20)  ←구현위치: FE/mobile-web/src/views/LoginView.vue (실 API 연동: stores/auth.js + api/auth.js)
 - [ ] Screen `메인 대시보드` (`/dashboard`) (→ API: API-18, API-02, API-04, API-01)  ←구현위치: 
 - [ ] Screen `사용자 프로필` (`/users/{userId}`)  ←구현위치: 
-- [ ] Screen `제보하기` (`/submit`) (→ API: API-10)  ←구현위치: 
+- [x] Screen `제보하기` (`/submit`) (→ API: API-10)  ←구현위치: FE/mobile-web/src/views/SubmitView.vue
 - [ ] Screen `주간 랭킹` (`/rankings/weekly`) (→ API: API-18)  ←구현위치: 
-- [ ] Screen `큐레이터 검수함` (`/admin/submissions`) (→ API: API-11)  ←구현위치: 
-- [ ] Screen `카드 상세` (`/cards/{cardSlug}`) (→ API: API-16, API-13, API-02, API-15, API-12, API-14)  ←구현위치: 
+- [x] Screen `큐레이터 검수함` (`/admin/submissions`) (→ API: API-11)  ←구현위치: FE/admin-web/src/views/SubmissionsView.vue
+- [x] Screen `카드 상세` (`/cards/{cardSlug}`) (→ API: API-16, API-13, API-02, API-15, API-12, API-14)  ←구현위치: FE/mobile-web/src/views/CardDetailView.vue (반응/댓글은 Phase 4)
 - [ ] Screen `프로젝트 목록` (`/projects`) (→ API: API-07)  ←구현위치: 
 - [ ] Screen `프로젝트 생성` (`/projects/new`) (→ API: API-07)  ←구현위치: 
 - [ ] Screen `프로젝트 상세` (`/projects/{projectId}`) (→ API: API-09, API-08)  ←구현위치: 
-- [ ] Screen `홈 피드` (`/home`) (→ API: API-01, API-13)  ←구현위치: 
+- [x] Screen `홈 피드` (`/home`) (→ API: API-01, API-13)  ←구현위치: FE/mobile-web/src/views/HomeView.vue (반응은 Phase 4)
 - [ ] Screen `Q&A 목록` (`/qna`) (→ API: API-05)  ←구현위치: 
 
 ## Aggregates (정합성 경계) (9)
-- [ ] Aggregate `Post` (불변식 3개) [→ 콘텐츠 서비스]  ←구현위치: 
-- [ ] Aggregate `Card` (불변식 3개) [→ 큐레이션 서비스]  ←구현위치: 
-- [ ] Aggregate `Submission` (불변식 3개) [→ 큐레이션 서비스]  ←구현위치: 
+- [x] Aggregate `Post` (불변식 3개) [→ 콘텐츠 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Post.java
+- [x] Aggregate `Card` (불변식 3개) [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Card.java
+- [x] Aggregate `Submission` (불변식 3개) [→ 큐레이션 서비스]  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/Submission.java
 - [ ] Aggregate `Project` (불변식 3개) [→ 프로젝트 서비스]  ←구현위치: 
 - [ ] Aggregate `Question` (불변식 1개) [→ Q&A 서비스]  ←구현위치: 
 - [ ] Aggregate `RankingSnapshot` (불변식 4개) [→ 랭킹 배치 워커]  ←구현위치: 
@@ -122,19 +122,19 @@
 - [x] Aggregate `User` (불변식 4개) [→ 인증 서비스]  ←구현위치: BE/auth-service/src/main/java/com/aicommunity/auth/domain/User.java
 
 ## Domain Entities (데이터 모델) (2)
-- [ ] Domain Entity `AuditLog` (속성 7개)  ←구현위치: 
+- [x] Domain Entity `AuditLog` (속성 7개)  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/AuditLog.java
 - [ ] Domain Entity `Answer` (속성 5개)  ←구현위치: 
 
 ## Domain Events (18)
-- [ ] Domain Event `PostCreated`  ←구현위치: 
+- [x] Domain Event `PostCreated`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
 - [ ] Domain Event `AnswerCreated`  ←구현위치: 
 - [ ] Domain Event `QuestionCreated`  ←구현위치: 
 - [ ] Domain Event `ProjectCreated`  ←구현위치: 
 - [ ] Domain Event `ProjectUpdated`  ←구현위치: 
-- [ ] Domain Event `SubmissionReceived`  ←구현위치: 
-- [ ] Domain Event `CardPublished`  ←구현위치: 
-- [ ] Domain Event `CardRejected`  ←구현위치: 
-- [ ] Domain Event `CardUpdated`  ←구현위치: 
+- [x] Domain Event `SubmissionReceived`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
+- [x] Domain Event `CardPublished`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
+- [x] Domain Event `CardRejected`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
+- [x] Domain Event `CardUpdated`  ←구현위치: BE/curation-service/src/main/java/com/aicommunity/curation/domain/event/CurationEvents.java
 - [ ] Domain Event `ReactionToggled`  ←구현위치: 
 - [ ] Domain Event `CommentCreated`  ←구현위치: 
 - [ ] Domain Event `CommentHidden`  ←구현위치: 

@@ -23,6 +23,7 @@ function createClient(baseURL) {
   const client = axios.create({
     baseURL,
     timeout: 15000,
+    withCredentials: true, // HttpOnly refresh 쿠키 송수신
     headers: { 'Content-Type': 'application/json' },
   })
 
@@ -41,8 +42,9 @@ function createClient(baseURL) {
     async (error) => {
       const original = error.config || {}
       const status = error.response?.status
+      const isAuthEndpoint = (original.url || '').includes('/api/v1/auth/')
 
-      if (status === 401 && authStoreRef && !original._retried) {
+      if (status === 401 && authStoreRef && !original._retried && !isAuthEndpoint) {
         original._retried = true
         const refreshed = await authStoreRef.tryRefresh()
         if (refreshed) {
