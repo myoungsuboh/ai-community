@@ -29,18 +29,34 @@ AI 레포·스킬을 커뮤니티가 직접 큐레이션하고, 함께 배우고
 ### 1) 로컬 실행 — Docker 불필요 (기본)
 설치가 필요 없는 내장 DB(H2)로 바로 실행됩니다.
 
-백엔드 (예: 인증 서비스):
-```bash
-cd BE
-./gradlew :auth-service:bootRun
+**가장 쉬운 방법 (Windows, 백엔드 8개 한 번에):**
+```powershell
+powershell -ExecutionPolicy Bypass -File run-all.ps1
 ```
-프론트엔드 (사용자 웹):
+그다음 프론트엔드(사용자 웹)를 새 터미널에서:
 ```bash
 cd FE/mobile-web
 npm install
 npm run dev
 ```
 브라우저에서 http://localhost:5173 접속.
+
+관리자 콘솔이 필요하면 또 다른 터미널에서 `cd FE/admin-web && npm install && npm run dev` → http://localhost:5174
+
+**개별 실행 (예: 인증 서비스만):**
+```bash
+cd BE
+./gradlew :auth-service:bootRun
+```
+
+> ⚠️ 로그인·회원가입 등 모든 기능은 **백엔드가 켜져 있어야** 동작합니다. 서버가 꺼져 있으면
+> 화면은 뜨지만 "네트워크 연결을 확인해 주세요" 오류가 납니다.
+
+### 로그인 / 회원가입
+- **회원가입**: 로그인 화면(`/login`)의 **[회원가입] 탭**에서 이메일·닉네임·비밀번호(8자 이상)로 가입.
+- **기본 제공 계정** (auth 서비스 시작 시 자동 생성):
+  - 큐레이터: `curator@ai.community` / `curator1234`
+  - 관리자: `admin@ai.community` / `admin1234`
 
 ### 2) 진짜 PostgreSQL + Redis 로 실행 (Docker 필요)
 ```bash
